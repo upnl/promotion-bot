@@ -1,0 +1,32 @@
+[
+  {
+    "commandType": "공통",
+    "name": "도움말",
+    "description": "커맨드 목록을 표시합니다"
+  },
+  {
+    "commandType": "정회원",
+    "name": "승격조건제시",
+    "description": "(정회원 전용) 승격조건을 제시합니다",
+    "subcommands": [
+      {
+        "name": "목록",
+        "description": "준회원에게 제시한 승격조건 목록을 확인합니다",
+        "options": [
+          {
+            "name": "준회원",
+            "description": "확인할 준회원"
+          }
+        ]
+      }
+    ],
+    "options": [
+
+    ]
+  },
+  {
+    "commandType": "준회원",
+    "name": "승격조건확인",
+    "description": "주어진 승격조건 목록을 표시합니다"
+  }
+]
