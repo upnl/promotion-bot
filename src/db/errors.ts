@@ -1,0 +1,1 @@
+const REGULAR_NOT_FOUND = "regular_not_found"

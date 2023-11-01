@@ -4,10 +4,16 @@ import { InteractionOperation } from "../interfaces/commands/InteractionOperatio
 import { applicationCommandCallbackMap, messageComponentCallbackMap } from "../commands/interactionCallbackMaps.js";
 
 const callback: InteractionOperation = async interaction => {
-    if (interaction.type == InteractionType.ApplicationCommand)
-        await (applicationCommandCallbackMap.get(interaction.commandName)!)(interaction)
-    else if (interaction.type == InteractionType.MessageComponent)
-        await (messageComponentCallbackMap.get(interaction.customId)!)(interaction)
+    if (interaction.type == InteractionType.ApplicationCommand) {
+        const callback = applicationCommandCallbackMap.get(interaction.commandName)
+        if (callback !== undefined)
+            callback(interaction)
+    }
+    else if (interaction.type == InteractionType.MessageComponent) {
+        const callback = messageComponentCallbackMap.get(interaction.customId)
+        if (callback !== undefined)
+            callback(interaction)
+    }
 }
 
 export const interactionCreateEvent: EventContainer<Events.InteractionCreate> = {

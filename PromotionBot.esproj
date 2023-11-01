@@ -6,6 +6,8 @@
     <CleanCommand>npm run clean</CleanCommand>
   </PropertyGroup>
   <ItemGroup>
+    <Folder Include="src\commands\utils\embeds\" />
     <Folder Include="src\interfaces\events\" />
+    <Folder Include="src\interfaces\models\" />
   </ItemGroup>
 </Project>

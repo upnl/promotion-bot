@@ -1,7 +1,5 @@
-import dotenv from "dotenv";
-dotenv.config()
-
-import { Client, Events, IntentsBitField } from "discord.js";
+import "./dotenvConfig.js";
+import { Client, IntentsBitField } from "discord.js";
 import { registerCommands } from "./commands/registerCommands.js";
 import { registerEvents } from "./events/registerEvents.js";
 

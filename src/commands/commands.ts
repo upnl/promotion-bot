@@ -1,10 +1,12 @@
 import { SlashCommandContainer } from "../interfaces/commands/CommandContainer.js";
-import { givenMissionCommand } from "./givenMission/givenMissionCommand.js";
-import { gottenMissionCommand } from "./gottenMission/gottenMissionCommand.js";
-import { helpCommand } from "./help/helpCommand.js";
+import missionGive from "./missionGive/index.js";
+import missionCheck from "./missionCheck/index.js";
+import apply from "./apply/index.js";
+import help from "./help/index.js";
 
 export const commands: SlashCommandContainer[] = [
-    helpCommand,
-    givenMissionCommand,
-    gottenMissionCommand
+    help,
+    apply,
+    missionGive,
+    missionCheck
 ]
