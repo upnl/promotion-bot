@@ -6,6 +6,9 @@ import { errorEmbed } from "../../utils/embeds/errorEmbed.js"
 import { Mission } from "../../../interfaces/models/Mission.js"
 import { FieldValue } from "firebase-admin/firestore"
 import { createMissionPreviewString, createMissionPreviewTitle } from "../../utils/createString/createPreviewString.js"
+import { firebaseDb } from "../../../db/firebase.js"
+import { missionConverter, missionProgressConverter } from "../../../db/converters/missionConverter.js"
+import { ASSOCIATE, MISSION_PROGRESS } from "../../../db/collectionNames.js"
 
 const {
     notRegularEmbed,
@@ -33,14 +36,29 @@ const doConfirm = async (
 ) => {
     await buttonInteraction.deferReply()
 
-    const missionDocRef = await getMissionDocRef(interaction.user.id, isUniversal ? interaction.user.id : target.id, category, index)
+    const result = firebaseDb.runTransaction(async transaction => {
+        const missionDocRef = await getMissionDocRef(interaction.user.id, isUniversal ? interaction.user.id : target.id, category, index, transaction)
+        const missionProgressDocRef = await firebaseDb
+            .collection(ASSOCIATE).doc(target.id)
+            .collection(MISSION_PROGRESS).doc(interaction.user.id)
+            .withConverter(missionProgressConverter)
 
-    if (missionDocRef === null || missionDocRef === undefined) {
+        if (missionDocRef === null || missionDocRef === undefined)
+            return missionDocRef
+
+        const mission = await transaction.get(missionDocRef.withConverter(missionConverter)).then(snapshot => snapshot.data())
+
+        if (mission === undefined)
+            return undefined
+
+        await transaction.update(missionDocRef, { completed: FieldValue.arrayUnion(target.id) })
+        await transaction.update(missionProgressDocRef, { currentScore: FieldValue.increment(mission.score) })
+    })
+
+    if (result === null || result === undefined) {
         await buttonInteraction.editReply({ embeds: [errorEmbed] })
         return
     }
-
-    await missionDocRef.update({ completed: FieldValue.arrayUnion(target.id) })
 
     const successEmbed = new EmbedBuilder(successEmbedPrototype.toJSON())
         .addFields({ name: createMissionPreviewTitle(mission, target), value: createMissionPreviewString(mission, target) })
