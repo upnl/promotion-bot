@@ -14,8 +14,7 @@ const postMission: SlashCommandSubcommandContainer = {
         .addStringOption(option => option.setName("카테고리").setDescription("명시하지 않을 경우 \"공통 조건\" 또는 \"개인 조건\""))
         .addStringOption(option => option.setName("비고").setDescription("비고"))
         .addNumberOption(option => option.setName("점수").setDescription("명시하지 않을 경우 1점")),
-    callback: reply,
-    setup: []
+    callback: reply
 }
 
 export default postMission

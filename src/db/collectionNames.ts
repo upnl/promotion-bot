@@ -1,3 +1,4 @@
+export const QUARTER = "quarter"
 export const REGULAR = "regular"
 export const ASSOCIATE = "associate"
 export const MISSION = "mission"

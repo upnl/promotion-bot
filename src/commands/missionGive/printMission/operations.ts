@@ -1,7 +1,7 @@
 ﻿import { getAssociate, getRegular } from "../../../db/actions/memberActions.js"
 import { getMissionAll } from "../../../db/actions/missionActions.js"
 import { getMissionProgress } from "../../../db/actions/missionProgressActions.js"
-import { createMissionMapPrintString, createProgressPrintString } from "../../utils/createString/createPrintString.js"
+import { createMissionMapPrintString, createProgressPrintString } from "../../utils/createString/createMissionPrintString.js"
 import { errorEmbed } from "../../utils/embeds/errorEmbed.js"
 import builders from "./builders.js"
 import { ChatInputCommandInteraction, ComponentType, EmbedBuilder, InteractionResponse, Message, User, UserSelectMenuInteraction } from "discord.js"

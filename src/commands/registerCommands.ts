@@ -1,7 +1,7 @@
 import { Client, REST, Routes } from "discord.js";
 import { commands } from "./commands.js";
 
-const callAPI = async (client: Client) => {
+export const registerCommands = async (client: Client) => {
     const rest = new REST().setToken(process.env.TOKEN!);
 
     try {
@@ -15,9 +15,4 @@ const callAPI = async (client: Client) => {
     catch (error) {
         console.log(`There was an error: ${error}`);
     }
-}
-
-export const registerCommands = async (client: Client) => {
-    commands.forEach(command => command.setup.forEach(setupFunc => setupFunc()))
-    await callAPI(client)
 }

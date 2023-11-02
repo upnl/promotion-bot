@@ -1,7 +1,7 @@
+import { ConfigData } from "../config.js"
+
 export interface Regular {
-    config: {
-        goalScore: number;
-    }
+    config: ConfigData
 }
 
 export interface Associate {

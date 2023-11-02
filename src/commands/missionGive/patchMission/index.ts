@@ -15,8 +15,7 @@ const patchMission: SlashCommandSubcommandContainer = {
         .addStringOption(option => option.setName("내용").setDescription("수정 후 승격조건 내용"))
         .addStringOption(option => option.setName("비고").setDescription("수정 후 승격조건 비고"))
         .addNumberOption(option => option.setName("점수").setDescription("수정 후 승격조건 점수")),
-    callback: reply,
-    setup: []
+    callback: reply
 }
 
 export default patchMission

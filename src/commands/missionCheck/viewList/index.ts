@@ -10,8 +10,7 @@ const viewList: SlashCommandSubcommandContainer = {
         .setName(name)
         .setDescription(description)
         .addUserOption(option => option.setName("정회원").setDescription("특정 정회원이 제시한 승격조건 목록을 확인합니다")),
-    callback: reply,
-    setup: []
+    callback: reply
 }
 
 export default viewList

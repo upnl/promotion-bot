@@ -5,10 +5,11 @@ import { getMission, getMissionDocRef } from "../../../db/actions/missionActions
 import { errorEmbed } from "../../utils/embeds/errorEmbed.js"
 import { Mission } from "../../../interfaces/models/Mission.js"
 import { FieldValue } from "firebase-admin/firestore"
-import { createMissionPreviewString, createMissionPreviewTitle } from "../../utils/createString/createPreviewString.js"
+import { createMissionPreviewString, createMissionPreviewTitle } from "../../utils/createString/createMissionPreviewString.js"
 import { firebaseDb } from "../../../db/firebase.js"
 import { missionConverter, missionProgressConverter } from "../../../db/converters/missionConverter.js"
-import { ASSOCIATE, MISSION_PROGRESS } from "../../../db/collectionNames.js"
+import { ASSOCIATE, MISSION_PROGRESS, QUARTER } from "../../../db/collectionNames.js"
+import { getQuarterDataString } from "../../utils/getQuarterDataString.js"
 
 const {
     notRegularEmbed,
@@ -39,6 +40,7 @@ const doConfirm = async (
     const result = firebaseDb.runTransaction(async transaction => {
         const missionDocRef = await getMissionDocRef(interaction.user.id, isUniversal ? interaction.user.id : target.id, category, index, transaction)
         const missionProgressDocRef = await firebaseDb
+            .collection(QUARTER).doc(getQuarterDataString())
             .collection(ASSOCIATE).doc(target.id)
             .collection(MISSION_PROGRESS).doc(interaction.user.id)
             .withConverter(missionProgressConverter)

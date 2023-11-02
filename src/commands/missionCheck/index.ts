@@ -1,8 +1,5 @@
-﻿import { SlashCommandContainer } from "../../interfaces/commands/CommandContainer.js";
+﻿import { SlashCommandSubcommandsOnlyContainer } from "../../interfaces/commands/CommandContainer.js";
 import { MySlashCommandBuilder } from "../MySlashCommandBuilder.js";
-import { executeSubcommand } from "../utils/executeSubcommand.js";
-import { setupCommandCallback } from "../utils/setupCommandCallback.js";
-import { setupSubcommands } from "../utils/setupSubcommands.js";
 import viewStatus from "./viewStatus/index.js";
 import viewList from "./viewList/index.js";
 
@@ -14,17 +11,13 @@ const subcommands = [
     viewList
 ]
 
-const missionCheck: SlashCommandContainer = {
+const missionCheck: SlashCommandSubcommandsOnlyContainer = {
     commandType: "준회원",
     builder: new MySlashCommandBuilder()
         .setName(name)
         .setDescription(description)
         .addSubcommands(subcommands.map(subcommand => subcommand.builder)),
-    subcommands,
-    setup: [
-        setupCommandCallback(name, executeSubcommand(subcommands)),
-        setupSubcommands(subcommands)
-    ]
+    subcommands
 }
 
 export default missionCheck

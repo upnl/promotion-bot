@@ -2,19 +2,19 @@ import { SlashCommandBuilder, SlashCommandSubcommandBuilder, SlashCommandSubcomm
 import { CommandType } from "./CommandTypes.js";
 import { InteractionOperation } from "./InteractionOperation.js";
 
-export interface BaseCommandContainer {
-    builder: SlashCommandBuilder | SlashCommandSubcommandsOnlyBuilder | SlashCommandSubcommandBuilder;
-
-    setup: (() => void)[]
+export interface SlashCommandContainer {
+    commandType: CommandType;
+    builder: SlashCommandBuilder;
+    callback: InteractionOperation
 }
 
-export interface SlashCommandContainer extends BaseCommandContainer {
+export interface SlashCommandSubcommandsOnlyContainer {
     commandType: CommandType;
-    builder: SlashCommandBuilder | SlashCommandSubcommandsOnlyBuilder;
+    builder: SlashCommandSubcommandsOnlyBuilder;
     subcommands: SlashCommandSubcommandContainer[]
 }
 
-export interface SlashCommandSubcommandContainer extends BaseCommandContainer {
+export interface SlashCommandSubcommandContainer {
     builder: SlashCommandSubcommandBuilder;
     callback: InteractionOperation;
 }

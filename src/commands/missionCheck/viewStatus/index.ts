@@ -9,8 +9,7 @@ const viewCurrent: SlashCommandSubcommandContainer = {
     builder: new SlashCommandSubcommandBuilder()
         .setName(name)
         .setDescription(description),
-    callback: reply,
-    setup: []
+    callback: reply
 }
 
 export default viewCurrent

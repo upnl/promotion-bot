@@ -10,8 +10,7 @@ const printMission: SlashCommandSubcommandContainer = {
         .setName(name)
         .setDescription(description)
         .addUserOption(option => option.setName("준회원").setDescription("승격조건을 출력할 준회원").setRequired(true)),
-    callback: reply,
-    setup: []
+    callback: reply
 }
 
 export default printMission

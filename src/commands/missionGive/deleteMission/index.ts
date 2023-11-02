@@ -12,8 +12,7 @@ const deleteMission: SlashCommandSubcommandContainer = {
         .addUserOption(option => option.setName("대상").setDescription("공통 조건을 삭제하는 경우 자신을 입력").setRequired(true))
         .addStringOption(option => option.setName("카테고리").setDescription("삭제할 승격조건 카테고리").setRequired(true))
         .addNumberOption(option => option.setName("번호").setDescription("삭제할 승격조건 번호 (1-base)").setRequired(true)),
-    callback: reply,
-    setup: []
+    callback: reply
 }
 
 export default deleteMission

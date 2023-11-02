@@ -1,6 +1,5 @@
 ﻿import { SlashCommandContainer } from "../../interfaces/commands/CommandContainer.js";
 import { MySlashCommandBuilder } from "../MySlashCommandBuilder.js";
-import { setupCommandCallback } from "../utils/setupCommandCallback.js";
 import reply from "./reply.js";
 
 const name = "승격신청"
@@ -11,8 +10,7 @@ const apply: SlashCommandContainer = {
     builder: new MySlashCommandBuilder()
         .setName(name)
         .setDescription(description),
-    subcommands: [],
-    setup: [setupCommandCallback(name, reply)]
+    callback: reply
 }
 
 export default apply

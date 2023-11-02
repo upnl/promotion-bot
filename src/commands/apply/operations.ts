@@ -1,11 +1,12 @@
 import { ButtonInteraction, ChatInputCommandInteraction, ComponentType, InteractionResponse, Message } from "discord.js"
 import { firebaseDb } from "../../db/firebase.js"
-import { ASSOCIATE, MISSION_PROGRESS, REGULAR } from "../../db/collectionNames.js"
+import { ASSOCIATE, MISSION_PROGRESS, QUARTER, REGULAR } from "../../db/collectionNames.js"
 import { regularConverter } from "../../db/converters/regularConverter.js"
 import { associateConverter } from "../../db/converters/associateConverter.js"
 import { missionProgressConverter } from "../../db/converters/missionConverter.js"
 import builders from "./builders.js"
 import { errorEmbed } from "../utils/embeds/errorEmbed.js"
+import { getQuarterDataString } from "../utils/getQuarterDataString.js"
 
 const {
     applyEmbed,
@@ -21,14 +22,18 @@ const doConfirm = async (interaction: ChatInputCommandInteraction, buttonInterac
     await buttonInteraction.deferReply()
 
     try {
-        const associateDocRef = firebaseDb.collection(ASSOCIATE).doc(interaction.user.id)
+        const associateDocRef = firebaseDb
+            .collection(QUARTER).doc(getQuarterDataString())
+            .collection(ASSOCIATE).doc(interaction.user.id)
+        const regularCollectionRef = firebaseDb
+            .collection(QUARTER).doc(getQuarterDataString())
+            .collection(REGULAR)
 
         const success = await firebaseDb.runTransaction(async transaction => {
             if (await transaction.get(associateDocRef).then(snapshot => snapshot.exists))
                 return false
 
-            const regularSnapshots = await transaction
-                .get(firebaseDb.collection(REGULAR).withConverter(regularConverter))
+            const regularSnapshots = await transaction.get(regularCollectionRef.withConverter(regularConverter))
 
             await transaction.set(associateDocRef.withConverter(associateConverter), {})
             for (const regularSnapshot of regularSnapshots.docs) {

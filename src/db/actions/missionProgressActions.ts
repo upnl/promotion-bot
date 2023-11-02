@@ -1,12 +1,14 @@
 import { Client } from "discord.js"
-import { ASSOCIATE, MISSION_PROGRESS } from "../collectionNames.js"
+import { ASSOCIATE, MISSION_PROGRESS, QUARTER } from "../collectionNames.js"
 import { firebaseDb } from "../firebase.js"
 import { missionProgressConverter } from "../converters/missionConverter.js"
 import assert from "assert"
+import { getQuarterDataString } from "../../commands/utils/getQuarterDataString.js"
 
 export const getMissionProgress = async (giverId: string, targetId: string) => {
     try {
         const missionProgress = await firebaseDb
+            .collection(QUARTER).doc(getQuarterDataString())
             .collection(ASSOCIATE).doc(targetId)
             .collection(MISSION_PROGRESS).doc(giverId)
             .withConverter(missionProgressConverter)
@@ -30,6 +32,7 @@ export const getMissionProgress = async (giverId: string, targetId: string) => {
 export const getMissionProgressAll = async (client: Client, targetId: string) => {
     try {
         const progressDocs = await firebaseDb
+            .collection(QUARTER).doc(getQuarterDataString())
             .collection(ASSOCIATE).doc(targetId)
             .collection(MISSION_PROGRESS)
             .withConverter(missionProgressConverter)

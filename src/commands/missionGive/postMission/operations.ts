@@ -4,7 +4,7 @@ import { postMission } from "../../../db/actions/missionActions.js"
 import { Mission } from "../../../interfaces/models/Mission.js"
 import { errorEmbed } from "../../utils/embeds/errorEmbed.js"
 import { getAssociate, getRegular } from "../../../db/actions/memberActions.js"
-import { createMissionPreviewString, createMissionPreviewTitle } from "../../utils/createString/createPreviewString.js"
+import { createMissionPreviewString, createMissionPreviewTitle } from "../../utils/createString/createMissionPreviewString.js"
 
 const {
     notRegularEmbed,

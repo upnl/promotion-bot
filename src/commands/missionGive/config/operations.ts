@@ -1,37 +1,60 @@
 ﻿import builders from "./builders.js"
 import { ButtonInteraction, ChatInputCommandInteraction, ComponentType, EmbedBuilder, InteractionResponse, Message, User } from "discord.js"
-import { getAssociate, getRegular } from "../../../db/actions/memberActions.js"
-import { deleteMission, getMission } from "../../../db/actions/missionActions.js"
+import { getRegular } from "../../../db/actions/memberActions.js"
 import { errorEmbed } from "../../utils/embeds/errorEmbed.js"
-import { createMissionPreviewEmbedField } from "../../utils/createString/createMissionString.js"
-import { Mission } from "../../../interfaces/models/Mission.js"
+import { firebaseDb } from "../../../db/firebase.js"
+import { ASSOCIATE, MISSION_PROGRESS, QUARTER, REGULAR } from "../../../db/collectionNames.js"
+import { regularConverter } from "../../../db/converters/regularConverter.js"
+import { missionProgressConverter } from "../../../db/converters/missionConverter.js"
+import { ConfigData, ConfigUpdateData } from "../../../interfaces/models/Config.js"
+import { createMissionEditPreviewString, createMissionPreviewTitle } from "../../utils/createString/createMissionPreviewString.js"
+import { createConfigEditPreviewString } from "../../utils/createString/createConfigEditPreviewString.js"
+import { getQuarterDataString } from "../../utils/getQuarterDataString.js"
 
 const {
     notRegularEmbed,
-    notAssociateEmbed,
-    missionNotFoundEmbed,
     replyEmbedPrototype,
     successEmbedPrototype,
     cancelEmbedPrototype,
+
     confirmButtonId,
     cancelButtonId,
     actionRow
 } = builders
 
 const readOptions = (interaction: ChatInputCommandInteraction) => ({
-    target: interaction.options.getUser("대상", true),
-    index: interaction.options.getNumber("번호", true)
+    goalScore: interaction.options.getNumber("목표점수", true)
 })
 
 const doConfirm = async (
     interaction: ChatInputCommandInteraction, buttonInteraction: ButtonInteraction,
-    target: User, index: number,
-    mission: Mission
-) => {
-    const success = await deleteMission(interaction.user.id, target.id, category, index)
+    configUpdateData: ConfigUpdateData,
+    configNew: ConfigData, configLast: ConfigData
+) => {    
+    const success = await firebaseDb.runTransaction(async transaction => {
+        const regularDocRef = firebaseDb
+            .collection(QUARTER).doc(getQuarterDataString())
+            .collection(REGULAR).doc(interaction.user.id)
+            .withConverter(regularConverter)
+        const associateProgressDocRefs = await firebaseDb
+            .collection(QUARTER).doc(getQuarterDataString())
+            .collection(ASSOCIATE)
+            .get().then(qsnapshot => qsnapshot.docs.map(snapshot =>
+                snapshot.ref.collection(MISSION_PROGRESS).doc(interaction.user.id).withConverter(missionProgressConverter)
+            ))
+
+
+        transaction.update(regularDocRef, { config: configNew })
+        if (configUpdateData.goalScore !== undefined)
+            for (const associateProgressDocRef of associateProgressDocRefs)
+                transaction.update(associateProgressDocRef, { goalScore: configNew.goalScore })
+
+        return true
+    })
 
     if (success) {
-        const successEmbed = new EmbedBuilder(successEmbedPrototype.toJSON()).setDescription(createMissionPreviewEmbedField(mission, target))
+        const successEmbed = new EmbedBuilder(successEmbedPrototype.toJSON())
+            .setDescription(createConfigEditPreviewString(configNew, configLast))
 
         await buttonInteraction.deferUpdate()
         await buttonInteraction.message.edit({ embeds: [successEmbed], components: [] })
@@ -42,10 +65,11 @@ const doConfirm = async (
 
 const doCancel = async (
     interaction: ChatInputCommandInteraction, buttonInteraction: ButtonInteraction,
-    target: User, index: number,
-    mission: Mission
+    configUpdateData: ConfigUpdateData,
+    configNew: ConfigData, configLast: ConfigData
 ) => {
-    const cancelEmbed = new EmbedBuilder(cancelEmbedPrototype.toJSON()).setDescription(createMissionPreviewEmbedField(mission, target))
+    const cancelEmbed = new EmbedBuilder(cancelEmbedPrototype.toJSON())
+        .setDescription(createConfigEditPreviewString(configNew, configLast))
 
     await buttonInteraction.deferUpdate()
     await buttonInteraction.message.edit({ embeds: [cancelEmbed], components: [] })
@@ -53,8 +77,8 @@ const doCancel = async (
 
 const addCollector = (
     interaction: ChatInputCommandInteraction, reply: Message<boolean> | InteractionResponse<boolean>,
-    target: User, index: number,
-    mission: Mission
+    configUpdateData: ConfigUpdateData,
+    configNew: ConfigData, configLast: ConfigData
 ) => {
     const collector = reply.createMessageComponentCollector({
         filter: i => i.user === interaction.user,
@@ -63,41 +87,35 @@ const addCollector = (
 
     collector.on("collect", async buttonInteraction => {
         if (buttonInteraction.customId === confirmButtonId)
-            doConfirm(interaction, buttonInteraction, target, index, mission)
+            doConfirm(interaction, buttonInteraction, configUpdateData, configNew, configLast)
         else if (buttonInteraction.customId === cancelButtonId)
-            doCancel(interaction, buttonInteraction, target, index, mission)
+            doCancel(interaction, buttonInteraction, configUpdateData, configNew, configLast)
     })
 }
 
-const doReply = async (interaction: ChatInputCommandInteraction, target: User, category: string, index: number, isEditing: boolean = false) => {
+const doReply = async (interaction: ChatInputCommandInteraction, configUpdateData: ConfigUpdateData, isEditing: boolean = false) => {
     if (!isEditing)
         await interaction.deferReply()
 
-    if (await getRegular(interaction.user.id) === undefined) {
+    const regular = await getRegular(interaction.user.id)
+    if (regular === undefined) {
         await interaction.editReply({ embeds: [notRegularEmbed] })
         return
     }
-    else if (target.id !== interaction.user.id && await getAssociate(target.id) === undefined) {
-        await interaction.editReply({ embeds: [notAssociateEmbed] })
-        return
+
+    const configLast = regular.config
+    const configNew: ConfigData = {
+        ...regular.config,
+        ...configUpdateData
     }
 
-    const mission = await getMission(interaction.user.id, target.id, category, index)
+    const replyEmbed = new EmbedBuilder(replyEmbedPrototype.toJSON())
+        .setDescription(createConfigEditPreviewString(configNew, configLast))
 
-    if (mission === null) {
-        await interaction.editReply({ embeds: [missionNotFoundEmbed] })
-        return
-    }
-    if (mission === undefined) {
-        await interaction.editReply({ embeds: [errorEmbed] })
-        return
-    }
-
-    const replyEmbed = new EmbedBuilder(replyEmbedPrototype.toJSON()).setDescription(createMissionPreviewEmbedField(mission, target))
-    const reply = await interaction.editReply({ embeds: [replyEmbed], components: [actionRow] });
+    const reply = await interaction.editReply({ embeds: [replyEmbed], components: [actionRow] })
 
     if (!isEditing)
-        addCollector(interaction, reply, target, index, mission)
+        addCollector(interaction, reply, configUpdateData, configNew, configLast)
 }
 
 export default {
