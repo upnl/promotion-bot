@@ -7,9 +7,8 @@ import { ASSOCIATE, MISSION_PROGRESS, QUARTER, REGULAR } from "../../../db/colle
 import { regularConverter } from "../../../db/converters/regularConverter.js"
 import { missionProgressConverter } from "../../../db/converters/missionConverter.js"
 import { ConfigData, ConfigUpdateData } from "../../../interfaces/models/Config.js"
-import { createMissionEditPreviewString, createMissionPreviewTitle } from "../../utils/createString/createMissionPreviewString.js"
 import { createConfigEditPreviewString } from "../../utils/createString/createConfigEditPreviewString.js"
-import { getQuarterDataString } from "../../utils/getQuarterDataString.js"
+import { getQuarterDataString } from "../../utils/quarterData/getQuarterData.js"
 
 const {
     notRegularEmbed,
@@ -33,11 +32,11 @@ const doConfirm = async (
 ) => {    
     const success = await firebaseDb.runTransaction(async transaction => {
         const regularDocRef = firebaseDb
-            .collection(QUARTER).doc(getQuarterDataString())
+            .collection(QUARTER).doc(await getQuarterDataString())
             .collection(REGULAR).doc(interaction.user.id)
             .withConverter(regularConverter)
         const associateProgressDocRefs = await firebaseDb
-            .collection(QUARTER).doc(getQuarterDataString())
+            .collection(QUARTER).doc(await getQuarterDataString())
             .collection(ASSOCIATE)
             .get().then(qsnapshot => qsnapshot.docs.map(snapshot =>
                 snapshot.ref.collection(MISSION_PROGRESS).doc(interaction.user.id).withConverter(missionProgressConverter)

@@ -9,7 +9,7 @@ import { createMissionPreviewString, createMissionPreviewTitle } from "../../uti
 import { firebaseDb } from "../../../db/firebase.js"
 import { missionConverter, missionProgressConverter } from "../../../db/converters/missionConverter.js"
 import { ASSOCIATE, MISSION_PROGRESS, QUARTER } from "../../../db/collectionNames.js"
-import { getQuarterDataString } from "../../utils/getQuarterDataString.js"
+import { getQuarterDataString } from "../../utils/quarterData/getQuarterData.js"
 
 const {
     notRegularEmbed,
@@ -39,8 +39,8 @@ const doConfirm = async (
 
     const result = firebaseDb.runTransaction(async transaction => {
         const missionDocRef = await getMissionDocRef(interaction.user.id, isUniversal ? interaction.user.id : target.id, category, index, transaction)
-        const missionProgressDocRef = await firebaseDb
-            .collection(QUARTER).doc(getQuarterDataString())
+        const missionProgressDocRef = firebaseDb
+            .collection(QUARTER).doc(await getQuarterDataString())
             .collection(ASSOCIATE).doc(target.id)
             .collection(MISSION_PROGRESS).doc(interaction.user.id)
             .withConverter(missionProgressConverter)
@@ -112,7 +112,7 @@ const doReply = async (
         await interaction.editReply({ embeds: [notRegularEmbed] })
         return
     }
-    else if (target.id !== interaction.user.id && await getAssociate(target.id) === undefined) {
+    else if (await getAssociate(target.id) === undefined) {
         await interaction.editReply({ embeds: [notAssociateEmbed] })
         return
     }

@@ -1,4 +1,4 @@
-import { ConfigData } from "../config.js"
+import { ConfigData } from "./Config.js"
 
 export interface Regular {
     config: ConfigData

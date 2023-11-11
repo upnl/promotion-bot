@@ -1,14 +1,15 @@
 ﻿import { Mission, MissionMap, MissionUpdateData } from "../../interfaces/models/Mission.js";
 import { firebaseDb } from "../firebase.js";
-import { MISSION, QUARTER, REGULAR } from "../collectionNames.js";
-import { missionConverter, missionMapConverter } from "../converters/missionConverter.js";
-import { FieldValue } from "firebase-admin/firestore";
-import { getQuarterDataString } from "../../commands/utils/getQuarterDataString.js";
+import { ASSOCIATE, MISSION, MISSION_PROGRESS, QUARTER, REGULAR } from "../collectionNames.js";
+import { missionConverter, missionMapConverter, missionProgressConverter } from "../converters/missionConverter.js";
+import { FieldValue, Transaction } from "firebase-admin/firestore";
+import { getQuarterDataString } from "../../commands/utils/quarterData/getQuarterData.js";
+import { associateConverter } from "../converters/associateConverter.js";
 
 export const getMissionDocRef = async (giverId: string, targetId: string, category: string, index: number, transaction?: FirebaseFirestore.Transaction) => {
     try {
         const missionMapDocRef = firebaseDb
-            .collection(QUARTER).doc(getQuarterDataString())
+            .collection(QUARTER).doc(await getQuarterDataString())
             .collection(REGULAR).doc(giverId)
             .collection(MISSION).doc(targetId)
 
@@ -25,7 +26,7 @@ export const getMissionDocRef = async (giverId: string, targetId: string, catego
             return null
 
         return firebaseDb
-            .collection(QUARTER).doc(getQuarterDataString())
+            .collection(QUARTER).doc(await getQuarterDataString())
             .collection(MISSION).doc(missionIdsInCategory[index])
             .withConverter(missionConverter)
     }
@@ -58,14 +59,14 @@ export const getMission = async (giverId: string, targetId: string, category: st
 export const getMissionAll = async (giverId: string, targetId: string): Promise<[Map<string, Mission[]>, Map<string, Mission[]>] | undefined> => {
     try {
         const missionMapSpecific = await firebaseDb
-            .collection(QUARTER).doc(getQuarterDataString())
+            .collection(QUARTER).doc(await getQuarterDataString())
             .collection(REGULAR).doc(giverId)
             .collection(MISSION).doc(targetId)
             .withConverter(missionMapConverter)
             .get().then(snapshot => snapshot.data())
 
         const missionMapUniversal = await firebaseDb
-            .collection(QUARTER).doc(getQuarterDataString())
+            .collection(QUARTER).doc(await getQuarterDataString())
             .collection(REGULAR).doc(giverId)
             .collection(MISSION).doc(giverId)
             .withConverter(missionMapConverter)
@@ -83,7 +84,7 @@ export const getMissionAll = async (giverId: string, targetId: string): Promise<
 
                 for (const missionId of missionIds) {
                     const mission = await firebaseDb
-                        .collection(QUARTER).doc(getQuarterDataString())
+                        .collection(QUARTER).doc(await getQuarterDataString())
                         .collection(MISSION).doc(missionId)
                         .withConverter(missionConverter)
                         .get().then(snapshot => snapshot.data())
@@ -112,11 +113,11 @@ export const postMission = async (mission: Mission): Promise<boolean> => {
     const targetId = mission.targetId
 
     const missionDocRef = firebaseDb
-        .collection(QUARTER).doc(getQuarterDataString())
+        .collection(QUARTER).doc(await getQuarterDataString())
         .collection(MISSION).doc()
 
     const missionMapDocRef = firebaseDb
-        .collection(QUARTER).doc(getQuarterDataString())
+        .collection(QUARTER).doc(await getQuarterDataString())
         .collection(REGULAR).doc(giverId)
         .collection(MISSION).doc(targetId)
 
@@ -151,15 +152,51 @@ export const postMission = async (mission: Mission): Promise<boolean> => {
     }
 }
 
-export const patchMission = async (giverId: string, targetId: string, category: string, index: number, missionUpdateData: MissionUpdateData) => {
-    const missionDocRef = await getMissionDocRef(giverId, targetId, category, index)
-
-    if (missionDocRef === null || missionDocRef === undefined)
-        return missionDocRef
+export const updateMissionScore = async (mission: Mission, newScore: number, transaction?: Transaction) => {
+    if (newScore === mission.score)
+        return true;
 
     try {
-        missionDocRef.update(missionUpdateData)
+        for (const associate of mission.completed) {
+            const missionProgressDocRef = firebaseDb
+                .collection(QUARTER).doc(await getQuarterDataString())
+                .collection(ASSOCIATE).doc(associate)
+                .collection(MISSION_PROGRESS).doc(mission.giverId)
+                .withConverter(missionProgressConverter)
+
+            if (transaction !== undefined)
+                await transaction.update(missionProgressDocRef, { currentScore: FieldValue.increment(newScore - mission.score) })
+            else
+                await missionProgressDocRef.update({ currentScore: FieldValue.increment(newScore - mission.score) })
+        }
+
         return true
+    }
+    catch (e) {
+        return false
+    }
+}
+
+export const patchMission = async (giverId: string, targetId: string, category: string, index: number, missionUpdateData: MissionUpdateData) => {
+    try {
+        const result = await firebaseDb.runTransaction(async transaction => {
+            const missionDocRef = await getMissionDocRef(giverId, targetId, category, index, transaction)
+
+            if (missionDocRef === null || missionDocRef === undefined)
+                return missionDocRef
+
+            const mission = await transaction.get(missionDocRef).then(snapshot => snapshot.data())
+            if (mission === undefined)
+                return mission
+
+            if (missionUpdateData.score !== undefined)
+                await updateMissionScore(mission, missionUpdateData.score, transaction)
+            missionDocRef.update(missionUpdateData)
+
+            return true
+        })
+
+        return result
     }
     catch (e) {
         console.error("Error updating document: ", e)
@@ -172,7 +209,7 @@ export const deleteMission = async (giverId: string, targetId: string, category:
     try {
         const result = await firebaseDb.runTransaction(async transaction => {
             const missionIdsDocRef = firebaseDb
-                .collection(QUARTER).doc(getQuarterDataString())
+                .collection(QUARTER).doc(await getQuarterDataString())
                 .collection(REGULAR).doc(giverId)
                 .collection(MISSION).doc(targetId)
                 .withConverter(missionMapConverter)
@@ -186,12 +223,20 @@ export const deleteMission = async (giverId: string, targetId: string, category:
                 return null
 
             const missionDocRef = firebaseDb
-                .collection(QUARTER).doc(getQuarterDataString())
+                .collection(QUARTER).doc(await getQuarterDataString())
                 .collection(MISSION).doc(missionIdsInCategory[index])
                 .withConverter(missionConverter)
 
-            const newMissionIdsInCategory = missionIdsInCategory.splice(index - 1, 1)
-            transaction.update(missionIdsDocRef, { [`data.${category}`]: newMissionIdsInCategory.length > 0 ? newMissionIdsInCategory : FieldValue.delete })
+            const mission = await transaction.get(missionDocRef).then(snapshot => snapshot.data())
+            if (mission === undefined)
+                return mission
+
+            missionIdsInCategory.splice(index, 1)
+            
+            await updateMissionScore(mission, 0, transaction)
+            transaction.update(missionIdsDocRef, {
+                [`data.${category}`]: missionIdsInCategory.length > 0 ? missionIdsInCategory : FieldValue.delete()
+            })
             transaction.delete(missionDocRef)
 
             return true

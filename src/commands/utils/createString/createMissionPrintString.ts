@@ -2,7 +2,7 @@
 import { isDefaultCategory } from "./createMissionString.js"
 
 const createMissionPrintString = (mission: Mission, targetId: string) =>
-    `- ${mission.content} [${mission.score}점]\n`
+    `- ${mission.content} [${mission.score}점]\n` + (mission.note !== "" ? `\n  - ${mission.note}` : "")
 
 export const createMissionMapPrintString = (missionMap: Map<string, Mission[]>, targetId: string) => missionMap.size > 0 ?
     Array.from(missionMap)

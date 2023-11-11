@@ -85,6 +85,8 @@ const doReply = async (interaction: ChatInputCommandInteraction, target: User | 
         }
         const [missionUniversal, missionSpecific] = missions
 
+        console.log(missionSpecific.size);
+
         replyEmbed = new EmbedBuilder()
             .setTitle(`${target.displayName}의 승격 조건 : ${interaction.user.displayName}`)
             .addFields({ name: "달성 현황", value: createProgressString(progress.currentScore, progress.goalScore), inline: false })

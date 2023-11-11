@@ -7,6 +7,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="src\commands\utils\embeds\" />
+    <Folder Include="src\commands\utils\roleId\" />
     <Folder Include="src\interfaces\events\" />
   </ItemGroup>
   <ProjectExtensions>

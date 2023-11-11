@@ -3,10 +3,10 @@ import { Mission } from "../../../interfaces/models/Mission.js"
 import { makeItalic } from "./markdown.js"
 
 export const createMissionPreviewTitle = (mission: Mission, target: User) =>
-    (mission.giverId !== mission.targetId ? `${target.displayName}의 승격조건` : "공통조건")
+    (mission.giverId !== mission.targetId ? `${target.displayName}의 승격조건` : "공통조건") 
 
 export const createMissionPreviewString = (mission: Mission, target: User) =>
-    `- ${mission.category} - ${mission.content} [${mission.score}점]`
+    `- ${mission.category} - ${mission.content} [${mission.score}점]` + (mission.note !== "" ? `\n  - ${mission.note}` : "")
 
 export const createMissionEditPreviewString = (missionNew: Mission, missionLast: Mission, target: User) =>
     `${makeItalic(missionNew.category, missionNew.category !== missionLast.category)} ` +

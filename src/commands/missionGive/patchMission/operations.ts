@@ -10,6 +10,7 @@ const {
     notRegularEmbed,
     notAssociateEmbed,
     missionNotFoundEmbed,
+    noChangeEmbed,
     replyEmbedPrototype,
     successEmbedPrototype,
     cancelEmbedPrototype,
@@ -88,6 +89,10 @@ const doReply = async (interaction: ChatInputCommandInteraction, target: User, c
     }
     else if (target.id !== interaction.user.id && await getAssociate(target.id) === undefined) {
         await interaction.editReply({ embeds: [notAssociateEmbed] })
+        return
+    }
+    else if (missionUpdateData.content === undefined && missionUpdateData.note === undefined && missionUpdateData.score === undefined) {
+        await interaction.editReply({ embeds: [noChangeEmbed] })
         return
     }
 

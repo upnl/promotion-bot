@@ -1,7 +1,7 @@
 ﻿import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Colors, EmbedBuilder, MessageActionRowComponentBuilder } from "discord.js"
 
-const notRegularEmbed = new EmbedBuilder().setTitle("정회원만 승격조건을 제시할 수 있습니다.").setColor(Colors.Red)
-const notAssociateEmbed = new EmbedBuilder().setTitle("대상으로는 승격신청을 한 준회원 및 자기 자신만 선택할 수 있습니다.").setColor(Colors.Red)
+const notRegularEmbed = new EmbedBuilder().setTitle("정회원이 아닙니다").setColor(Colors.Red)
+const notAssociateEmbed = new EmbedBuilder().setTitle("대상으로는 승격신청을 한 준회원 및 자기 자신만 선택할 수 있습니다").setColor(Colors.Red)
 const missionNotFoundEmbed = new EmbedBuilder().setTitle("승격조건을 찾을 수 없습니다.").setColor(Colors.Red)
 
 const replyEmbedPrototype = new EmbedBuilder().setTitle("승격조건을 삭제합니까?")

@@ -4,7 +4,7 @@ import { InteractionOperation } from "./InteractionOperation.js";
 
 export interface SlashCommandContainer {
     commandType: CommandType;
-    builder: SlashCommandBuilder;
+    builder: Omit<SlashCommandBuilder, "addSubcommandGroup" | "addSubcommand">;
     callback: InteractionOperation
 }
 

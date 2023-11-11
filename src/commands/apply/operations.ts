@@ -6,7 +6,7 @@ import { associateConverter } from "../../db/converters/associateConverter.js"
 import { missionProgressConverter } from "../../db/converters/missionConverter.js"
 import builders from "./builders.js"
 import { errorEmbed } from "../utils/embeds/errorEmbed.js"
-import { getQuarterDataString } from "../utils/getQuarterDataString.js"
+import { getQuarterDataString } from "../utils/quarterData/getQuarterData.js"
 
 const {
     applyEmbed,
@@ -23,10 +23,10 @@ const doConfirm = async (interaction: ChatInputCommandInteraction, buttonInterac
 
     try {
         const associateDocRef = firebaseDb
-            .collection(QUARTER).doc(getQuarterDataString())
+            .collection(QUARTER).doc(await getQuarterDataString())
             .collection(ASSOCIATE).doc(interaction.user.id)
         const regularCollectionRef = firebaseDb
-            .collection(QUARTER).doc(getQuarterDataString())
+            .collection(QUARTER).doc(await getQuarterDataString())
             .collection(REGULAR)
 
         const success = await firebaseDb.runTransaction(async transaction => {
@@ -59,6 +59,7 @@ const doConfirm = async (interaction: ChatInputCommandInteraction, buttonInterac
         }
     }
     catch (e) {
+        console.error(e)
         await buttonInteraction.editReply({ embeds: [errorEmbed] })
     }
 }

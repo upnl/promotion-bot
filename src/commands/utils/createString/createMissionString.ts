@@ -5,7 +5,8 @@ import { makeItalic } from "./markdown.js";
 export const isDefaultCategory = (category: string) => (category === "공통 조건" || category === "개인 조건")
 
 const createMissionString = (mission: Mission, targetId: string) =>
-    `- ${mission.completed.includes(targetId) ? ":white_check_mark:" : ":white_square_button:"} ${mission.content} [${mission.score}점]`
+    `- ${mission.completed.includes(targetId) ? ":white_check_mark:" : ":white_square_button:"} ${mission.content} [${mission.score}점]` + 
+    (mission.note !== "" ? `\n  - ${mission.note}` : "")
 
 export const createMissionMapString = (missionMap: Map<string, Mission[]>, targetId: string) => missionMap.size > 0 ?
     Array.from(missionMap)
