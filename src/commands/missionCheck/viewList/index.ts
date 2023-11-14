@@ -9,7 +9,7 @@ const viewList: SlashCommandSubcommandContainer = {
     builder: new SlashCommandSubcommandBuilder()
         .setName(name)
         .setDescription(description)
-        .addUserOption(option => option.setName("정회원").setDescription("특정 정회원이 제시한 승격조건 목록을 확인합니다")),
+        .addUserOption(option => option.setName("정회원").setDescription("승격조건 목록을 확인할 정회원")),
     callback: reply
 }
 

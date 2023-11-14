@@ -10,7 +10,7 @@ const progressQuarter: SlashCommandContainer = {
     builder: new MySlashCommandBuilder()
         .setName(name)
         .setDescription(description)
-        .addIntegerOption(option => option.setName("년도").setDescription("입력하는 경우 분기도 입력해야 함"))
+        .addIntegerOption(option => option.setName("연도").setDescription("입력하는 경우 분기도 입력해야 함"))
         .addIntegerOption(option => option.setName("분기").setDescription("입력하는 경우 연도도 입력해야 함")),
     callback: reply
 }

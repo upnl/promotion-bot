@@ -26,8 +26,8 @@ const {
 } = builders
 
 const readOptions = (interaction: ChatInputCommandInteraction) => ({
-    year: interaction.options.getNumber("연도"),
-    quarter: interaction.options.getNumber("분기")
+    year: interaction.options.getInteger("연도"),
+    quarter: interaction.options.getInteger("분기")
 })
 
 const doConfirm = async (
