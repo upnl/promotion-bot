@@ -1,14 +1,12 @@
 ﻿import builders from "./builders.js"
-import { ButtonInteraction, ChatInputCommandInteraction, ComponentType, EmbedBuilder, InteractionResponse, Message, User } from "discord.js"
+import { ButtonInteraction, ChatInputCommandInteraction, ComponentType, EmbedBuilder, GuildMember, InteractionResponse, Message, User } from "discord.js"
 import { Mission, MissionUpdateData } from "../../../interfaces/models/Mission.js"
 import { getMission, patchMission } from "../../../db/actions/missionActions.js"
 import { errorEmbed } from "../../utils/embeds/errorEmbed.js"
-import { getAssociate, getRegular } from "../../../db/actions/memberActions.js"
 import { createMissionEditPreviewString, createMissionPreviewTitle } from "../../utils/createString/createMissionPreviewString.js"
+import { checkAssociate } from "../../utils/checkRole/checkAssociate.js"
 
 const {
-    notRegularEmbed,
-    notAssociateEmbed,
     missionNotFoundEmbed,
     noChangeEmbed,
     replyEmbedPrototype,
@@ -83,15 +81,10 @@ const doReply = async (interaction: ChatInputCommandInteraction, target: User, c
     if (!isEditing)
         await interaction.deferReply()
 
-    if (await getRegular(interaction.user.id) === undefined) {
-        await interaction.editReply({ embeds: [notRegularEmbed] })
+    if (!await checkAssociate(interaction, target.id, true))
         return
-    }
-    else if (target.id !== interaction.user.id && await getAssociate(target.id) === undefined) {
-        await interaction.editReply({ embeds: [notAssociateEmbed] })
-        return
-    }
-    else if (missionUpdateData.content === undefined && missionUpdateData.note === undefined && missionUpdateData.score === undefined) {
+
+    if (missionUpdateData.content === undefined && missionUpdateData.note === undefined && missionUpdateData.score === undefined) {
         await interaction.editReply({ embeds: [noChangeEmbed] })
         return
     }

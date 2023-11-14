@@ -1,14 +1,12 @@
-﻿import { getAssociate, getRegular } from "../../../db/actions/memberActions.js"
-import { getMissionAll } from "../../../db/actions/missionActions.js"
+﻿import { getMissionAll } from "../../../db/actions/missionActions.js"
 import { getMissionProgress } from "../../../db/actions/missionProgressActions.js"
+import { checkAssociate } from "../../utils/checkRole/checkAssociate.js"
 import { createMissionMapPrintString, createProgressPrintString } from "../../utils/createString/createMissionPrintString.js"
 import { errorEmbed } from "../../utils/embeds/errorEmbed.js"
 import builders from "./builders.js"
 import { ChatInputCommandInteraction, ComponentType, EmbedBuilder, InteractionResponse, Message, User, UserSelectMenuInteraction } from "discord.js"
 
 const {
-    notAssociateEmbed,
-    notRegularEmbed
 } = builders
 
 const readOptions = (interaction: ChatInputCommandInteraction) => ({
@@ -19,14 +17,8 @@ const doReply = async (interaction: ChatInputCommandInteraction, target: User, i
     if (!isEditing)
         await interaction.deferReply()
 
-    if (await getRegular(interaction.user.id) === undefined) {
-        await interaction.editReply({ embeds: [notRegularEmbed] })
+    if (!await checkAssociate(interaction, target.id))
         return
-    }
-    if (await getAssociate(target.id) === undefined) {
-        const reply = await interaction.editReply({ embeds: [notAssociateEmbed] })
-        return
-    }
 
     const progress = await getMissionProgress(interaction.user.id, target.id)
     const missions = await getMissionAll(interaction.user.id, target.id)

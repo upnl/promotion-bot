@@ -8,14 +8,13 @@ import { createQuarterDataString } from "../utils/createString/createQuarterData
 import { makeBold } from "../utils/createString/markdown.js"
 import assert from "assert"
 import { setQuarterData } from "../utils/quarterData/setQuarterData.js"
-import { setRoleIds } from "../utils/roleId/setRoleIds.js"
-import { RoleIds } from "../../interfaces/models/RoleIds.js"
 import { firebaseDb } from "../../db/firebase.js"
 import { QUARTER, REGULAR } from "../../db/collectionNames.js"
 import { regularConverter } from "../../db/converters/regularConverter.js"
+import { getRoleIds } from "../utils/roleId/getRoleIds.js"
 
 const {
-    notLeaderEmbed,
+    regularRoleNotFoundEmbed,
     invalidDataEmbed,
     invalidQuarterEmbed,
     progressQuarterEmbedPrototype,
@@ -28,14 +27,12 @@ const {
 
 const readOptions = (interaction: ChatInputCommandInteraction) => ({
     year: interaction.options.getNumber("연도"),
-    quarter: interaction.options.getNumber("분기"),
-    regularRole: interaction.options.getRole("정회원", true),
-    associateRole: interaction.options.getRole("준회원", true)
+    quarter: interaction.options.getNumber("분기")
 })
 
 const doConfirm = async (
     interaction: ChatInputCommandInteraction, buttonInteraction: ButtonInteraction,
-    quarterNew: QuarterData, regularRole: Role, associateRole: Role,
+    quarterNew: QuarterData, regularRole: Role
 ) => {
     await buttonInteraction.deferReply()
 
@@ -49,7 +46,6 @@ const doConfirm = async (
         }
 
         await setQuarterData(quarterNew)
-        await setRoleIds({ regularRole: regularRole.id, associateRole: associateRole.id })
 
         const successEmbed = new EmbedBuilder(successEmbedPrototype.toJSON())
             .setDescription(makeBold(createQuarterDataString(quarterNew)))
@@ -64,7 +60,7 @@ const doConfirm = async (
 
 const doCancel = async (
     interaction: ChatInputCommandInteraction, buttonInteraction: ButtonInteraction,
-    quarterNew: QuarterData, regularRole: Role, associateRole: Role,
+    quarterNew: QuarterData, regularRole: Role
 ) => {
     await buttonInteraction.deferUpdate()
 
@@ -76,7 +72,7 @@ const doCancel = async (
 
 const addCollector = (
     interaction: ChatInputCommandInteraction, reply: Message<boolean> | InteractionResponse<boolean>,
-    quarterNew: QuarterData, regularRole: Role, associateRole: Role,
+    quarterNew: QuarterData, regularRole: Role
 ) => {
     const collector = reply.createMessageComponentCollector({
         filter: i => i.user === interaction.user,
@@ -84,23 +80,30 @@ const addCollector = (
     })
     collector.on("collect", async buttonInteraction => {
         if (buttonInteraction.customId === confirmButtonId)
-            doConfirm(interaction, buttonInteraction, quarterNew, regularRole, associateRole)
+            doConfirm(interaction, buttonInteraction, quarterNew, regularRole)
         else if (buttonInteraction.customId === cancelButtonId)
-            doCancel(interaction, buttonInteraction, quarterNew, regularRole, associateRole)
+            doCancel(interaction, buttonInteraction, quarterNew, regularRole)
     })
 }
 
 const doReply = async (
     interaction: ChatInputCommandInteraction,
-    year: number | null, quarter: number | null, regularRole: Role, associateRole: Role,
+    year: number | null, quarter: number | null,
     isEditing: boolean = false
 ) => {
     await interaction.deferReply()
 
-    assert(interaction.inGuild())
+    assert(interaction.guild !== null)
+
+    const roleIds = await getRoleIds()
+    const regularRole = interaction.guild.roles.cache.get(roleIds.regularRole)
+
+    if (regularRole === undefined) {
+        await interaction.editReply({ embeds: [regularRoleNotFoundEmbed] })
+        return
+    }
 
     let quarterNew: QuarterData
-
     if (year === null && quarter === null)
         quarterNew = nextQuarter(await getQuarterData())
     else if (year === null || quarter === null) {
@@ -119,16 +122,6 @@ const doReply = async (
     const replyEmbed = new EmbedBuilder(progressQuarterEmbedPrototype.toJSON())
         .setDescription(makeBold(createQuarterDataString(quarterNew)))
         .addFields({
-            name: "정회원",
-            value: regularRole.toString(),
-            inline: true
-        })
-        .addFields({
-            name: "준회원",
-            value: associateRole.toString(),
-            inline: true
-        })
-        .addFields({
             name: "정회원 목록",
             value: regularRole.members.map(member => member.toString()).join("\n"),
             inline: false
@@ -137,7 +130,7 @@ const doReply = async (
     const reply = await interaction.editReply({ embeds: [replyEmbed], components: [actionRow] });
 
     if (!isEditing)
-        addCollector(interaction, reply, quarterNew, regularRole, associateRole)
+        addCollector(interaction, reply, quarterNew, regularRole)
 }
 
 export default { readOptions, doReply }

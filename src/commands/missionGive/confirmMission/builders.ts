@@ -9,9 +9,9 @@ const replyEmbedPrototype = new EmbedBuilder()
 const successEmbedPrototype = new EmbedBuilder().setTitle("승격조건 달성을 확인했습니다").setColor(Colors.Green)
 const cancelEmbedPrototype = new EmbedBuilder().setTitle("승격조건 달성 확인을 취소했습니다").setColor(Colors.Red)
 
-const confirmButtonId = "mission-confirm-confirm"
+const confirmButtonId = "confirm-mission-confirm"
 const confirmButton = new ButtonBuilder().setCustomId(confirmButtonId).setLabel("확인").setStyle(ButtonStyle.Success)
-const cancelButtonId = "mission-confirm-cancel"
+const cancelButtonId = "confirm-mission-cancel"
 const cancelButton = new ButtonBuilder().setCustomId(cancelButtonId).setLabel("취소").setStyle(ButtonStyle.Danger)
 const actionRow = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(confirmButton, cancelButton)
 

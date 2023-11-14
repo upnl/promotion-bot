@@ -9,7 +9,7 @@ const config: SlashCommandSubcommandContainer = {
     builder: new SlashCommandSubcommandBuilder()
         .setName(name)
         .setDescription(description)
-        .addNumberOption(option => option.setName("목표점수").setDescription("승격동의까지 필요한 점수를 설정합니다").setRequired(true)),
+        .addNumberOption(option => option.setName("목표점수").setDescription("승격동의까지 필요한 점수").setRequired(true)),
     callback: reply
 }
 

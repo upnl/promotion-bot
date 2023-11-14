@@ -5,10 +5,10 @@ import { deleteMission, getMission } from "../../../db/actions/missionActions.js
 import { errorEmbed } from "../../utils/embeds/errorEmbed.js"
 import { Mission } from "../../../interfaces/models/Mission.js"
 import { createMissionPreviewString, createMissionPreviewTitle } from "../../utils/createString/createMissionPreviewString.js"
+import { checkRegular } from "../../utils/checkRole/checkRegular.js"
+import { checkAssociate } from "../../utils/checkRole/checkAssociate.js"
 
 const {
-    notRegularEmbed,
-    notAssociateEmbed,
     missionNotFoundEmbed,
     replyEmbedPrototype,
     successEmbedPrototype,
@@ -79,14 +79,8 @@ const doReply = async (interaction: ChatInputCommandInteraction, target: User, c
     if (!isEditing)
         await interaction.deferReply()
 
-    if (await getRegular(interaction.user.id) === undefined) {
-        await interaction.editReply({ embeds: [notRegularEmbed] })
+    if (!await checkAssociate(interaction, target.id, true))
         return
-    }
-    else if (target.id !== interaction.user.id && await getAssociate(target.id) === undefined) {
-        await interaction.editReply({ embeds: [notAssociateEmbed] })
-        return
-    }
 
     const mission = await getMission(interaction.user.id, target.id, category, index)
 

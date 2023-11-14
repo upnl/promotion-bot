@@ -3,12 +3,10 @@ import { ButtonInteraction, ChatInputCommandInteraction, ComponentType, EmbedBui
 import { postMission } from "../../../db/actions/missionActions.js"
 import { Mission } from "../../../interfaces/models/Mission.js"
 import { errorEmbed } from "../../utils/embeds/errorEmbed.js"
-import { getAssociate, getRegular } from "../../../db/actions/memberActions.js"
 import { createMissionPreviewString, createMissionPreviewTitle } from "../../utils/createString/createMissionPreviewString.js"
+import { checkAssociate } from "../../utils/checkRole/checkAssociate.js"
 
 const {
-    notRegularEmbed,
-    notAssociateEmbed,
     replyEmbedPrototype,
     successEmbedPrototype,
     cancelEmbedPrototype,
@@ -71,14 +69,8 @@ const doReply = async (interaction: ChatInputCommandInteraction, target: User, m
     if (!isEditing)
         await interaction.deferReply()
 
-    if (await getRegular(mission.giverId) === undefined) {
-        await interaction.editReply({ embeds: [notRegularEmbed] })
+    if (!await checkAssociate(interaction, target.id, true))
         return
-    }
-    else if (mission.targetId !== mission.giverId && await getAssociate(mission.targetId) === undefined) {
-        await interaction.editReply({ embeds: [notAssociateEmbed] })
-        return
-    }
 
     const replyEmbed = new EmbedBuilder(replyEmbedPrototype.toJSON())
         .addFields({ name: createMissionPreviewTitle(mission, target), value: createMissionPreviewString(mission, target) })

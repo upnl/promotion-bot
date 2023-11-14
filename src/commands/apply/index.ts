@@ -10,7 +10,8 @@ const apply: SlashCommandContainer = {
     builder: new MySlashCommandBuilder()
         .setName(name)
         .setDescription(description),
-    callback: reply
+    callback: reply,
+    isApply: true
 }
 
 export default apply

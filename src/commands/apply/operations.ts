@@ -5,8 +5,10 @@ import { regularConverter } from "../../db/converters/regularConverter.js"
 import { associateConverter } from "../../db/converters/associateConverter.js"
 import { missionProgressConverter } from "../../db/converters/missionConverter.js"
 import builders from "./builders.js"
-import { errorEmbed } from "../utils/embeds/errorEmbed.js"
+import { errorEmbed, notAssociateEmbed } from "../utils/embeds/errorEmbed.js"
 import { getQuarterDataString } from "../utils/quarterData/getQuarterData.js"
+import assert from "assert"
+import { getRoleIds } from "../utils/roleId/getRoleIds.js"
 
 const {
     applyEmbed,
@@ -83,7 +85,23 @@ const addCollector = (interaction: ChatInputCommandInteraction, reply: Message<b
 }
 
 const doReply = async (interaction: ChatInputCommandInteraction, isEditing: boolean = false) => {
-    const reply = await interaction.reply({ embeds: [applyEmbed], components: [actionRow] });
+    if (!isEditing)
+        await interaction.deferReply()
+
+    assert(interaction.guild !== null)
+
+    const roleIds = await getRoleIds()
+
+    const associateMember = interaction.guild.members.cache.get(interaction.user.id)
+
+    assert(associateMember !== undefined)
+
+    if (!associateMember.roles.cache.has(roleIds.associateRole)) {
+        await interaction.editReply({ embeds: [notAssociateEmbed] })
+        return
+    }
+
+    const reply = await interaction.editReply({ embeds: [applyEmbed], components: [actionRow] });
 
     if (!isEditing)
         addCollector(interaction, reply)

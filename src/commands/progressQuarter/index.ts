@@ -10,8 +10,8 @@ const progressQuarter: SlashCommandContainer = {
     builder: new MySlashCommandBuilder()
         .setName(name)
         .setDescription(description)
-        .addRoleOption(option => option.setName("정회원").setDescription("정회원 롤").setRequired(true))
-        .addRoleOption(option => option.setName("준회원").setDescription("준회원 롤").setRequired(true)),
+        .addIntegerOption(option => option.setName("년도").setDescription("입력하는 경우 분기도 입력해야 함"))
+        .addIntegerOption(option => option.setName("분기").setDescription("입력하는 경우 연도도 입력해야 함")),
     callback: reply
 }
 

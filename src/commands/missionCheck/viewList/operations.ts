@@ -1,15 +1,13 @@
-﻿import { getAssociate, getRegular } from "../../../db/actions/memberActions.js"
-import { getMissionAll } from "../../../db/actions/missionActions.js"
+﻿import { getMissionAll } from "../../../db/actions/missionActions.js"
 import { getMissionProgress } from "../../../db/actions/missionProgressActions.js"
+import { checkRegular } from "../../utils/checkRole/checkRegular.js"
 import { createMissionMapString, createProgressString } from "../../utils/createString/createMissionString.js"
 import { errorEmbed } from "../../utils/embeds/errorEmbed.js"
 import builders from "./builders.js"
 import { ChatInputCommandInteraction, ComponentType, EmbedBuilder, InteractionResponse, Message, User, UserSelectMenuInteraction } from "discord.js"
 
 const {
-    notAssociateEmbed,
     noRegularEmbed,
-    notRegularEmbed,
     REGULAR_MENU_ID,
     actionRow
 } = builders
@@ -43,20 +41,15 @@ const doReply = async (interaction: ChatInputCommandInteraction, giver: User | n
     if (!isEditing)
         await interaction.deferReply()
 
-    if (await getAssociate(interaction.user.id) === undefined) {
-        await interaction.editReply({ embeds: [notAssociateEmbed] })
-        return
-    }
     if (giver === null) {
         const reply = await interaction.editReply({ embeds: [noRegularEmbed], components: [actionRow] })
         if (!isEditing)
             addCollector(interaction, reply, giver)
         return
     }
-    else if (await getRegular(giver.id) === undefined) {
-        const reply = await interaction.editReply({ embeds: [notRegularEmbed], components: [actionRow] })
+    else if (!await checkRegular(interaction, giver.id, [actionRow])) {
         if (!isEditing)
-            addCollector(interaction, reply, giver)
+            addCollector(interaction, await interaction.fetchReply(), giver)
         return
     }
 

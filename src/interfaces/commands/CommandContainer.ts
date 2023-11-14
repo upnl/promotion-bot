@@ -5,13 +5,15 @@ import { InteractionOperation } from "./InteractionOperation.js";
 export interface SlashCommandContainer {
     commandType: CommandType;
     builder: Omit<SlashCommandBuilder, "addSubcommandGroup" | "addSubcommand">;
-    callback: InteractionOperation
+    callback: InteractionOperation;
+    isApply?: boolean
 }
 
 export interface SlashCommandSubcommandsOnlyContainer {
     commandType: CommandType;
     builder: SlashCommandSubcommandsOnlyBuilder;
     subcommands: SlashCommandSubcommandContainer[]
+    isApply?: boolean
 }
 
 export interface SlashCommandSubcommandContainer {

@@ -1,6 +1,6 @@
-﻿import { getAssociate, getRegular } from "../../../db/actions/memberActions.js"
-import { getMissionAll } from "../../../db/actions/missionActions.js"
+﻿import { getMissionAll } from "../../../db/actions/missionActions.js"
 import { getMissionProgress } from "../../../db/actions/missionProgressActions.js"
+import { checkAssociate } from "../../utils/checkRole/checkAssociate.js"
 import { createMissionMapString, createProgressString } from "../../utils/createString/createMissionString.js"
 import { errorEmbed } from "../../utils/embeds/errorEmbed.js"
 import builders from "./builders.js"
@@ -8,8 +8,6 @@ import { ChatInputCommandInteraction, ComponentType, EmbedBuilder, InteractionRe
 
 const {
     noAssociateEmbed,
-    notAssociateEmbed,
-    notRegularEmbed,
     ASSOCIATE_MENU_ID,
     actionRow
 } = builders
@@ -43,10 +41,6 @@ const doReply = async (interaction: ChatInputCommandInteraction, target: User | 
     if (!isEditing)
         await interaction.deferReply()
 
-    if (await getRegular(interaction.user.id) === undefined) {
-        await interaction.editReply({ embeds: [notRegularEmbed] })
-        return
-    }
     if (target === null) {
         const reply = await interaction.editReply({ embeds: [noAssociateEmbed], components: [actionRow] })
         if (!isEditing)
@@ -70,10 +64,9 @@ const doReply = async (interaction: ChatInputCommandInteraction, target: User | 
             .addFields({ name: "공통 조건", value: createMissionMapString(missionUniversal, interaction.user.id), inline: false })
     }
     else {
-        if (await getAssociate(target.id) === undefined) {
-            const reply = await interaction.editReply({ embeds: [notAssociateEmbed], components: [actionRow] })
+        if (!await checkAssociate(interaction, target.id, true, [actionRow])) {
             if (!isEditing)
-                addCollector(interaction, reply, target)
+                addCollector(interaction, await interaction.fetchReply(), target)
             return
         }
 

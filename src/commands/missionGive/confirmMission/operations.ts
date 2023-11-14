@@ -1,6 +1,5 @@
 ﻿import builders from "./builders.js"
 import { ButtonInteraction, ChatInputCommandInteraction, ComponentType, EmbedBuilder, InteractionResponse, Message, User } from "discord.js"
-import { getAssociate, getRegular } from "../../../db/actions/memberActions.js"
 import { getMission, getMissionDocRef } from "../../../db/actions/missionActions.js"
 import { errorEmbed } from "../../utils/embeds/errorEmbed.js"
 import { Mission } from "../../../interfaces/models/Mission.js"
@@ -10,10 +9,9 @@ import { firebaseDb } from "../../../db/firebase.js"
 import { missionConverter, missionProgressConverter } from "../../../db/converters/missionConverter.js"
 import { ASSOCIATE, MISSION_PROGRESS, QUARTER } from "../../../db/collectionNames.js"
 import { getQuarterDataString } from "../../utils/quarterData/getQuarterData.js"
+import { checkAssociate } from "../../utils/checkRole/checkAssociate.js"
 
 const {
-    notRegularEmbed,
-    notAssociateEmbed,
     missionNotFoundEmbed,
     alreadyCompleteEmbed,
     successEmbedPrototype,
@@ -108,14 +106,8 @@ const doReply = async (
     if (!isEditing)
         await interaction.deferReply()
 
-    if (await getRegular(interaction.user.id) === undefined) {
-        await interaction.editReply({ embeds: [notRegularEmbed] })
+    if (!await checkAssociate(interaction, target.id, true))
         return
-    }
-    else if (await getAssociate(target.id) === undefined) {
-        await interaction.editReply({ embeds: [notAssociateEmbed] })
-        return
-    }
 
     const mission = await getMission(interaction.user.id, isUniversal ? interaction.user.id : target.id, category, index)
 

@@ -9,9 +9,9 @@ import { missionProgressConverter } from "../../../db/converters/missionConverte
 import { ConfigData, ConfigUpdateData } from "../../../interfaces/models/Config.js"
 import { createConfigEditPreviewString } from "../../utils/createString/createConfigEditPreviewString.js"
 import { getQuarterDataString } from "../../utils/quarterData/getQuarterData.js"
+import assert from "assert"
 
 const {
-    notRegularEmbed,
     replyEmbedPrototype,
     successEmbedPrototype,
     cancelEmbedPrototype,
@@ -97,10 +97,7 @@ const doReply = async (interaction: ChatInputCommandInteraction, configUpdateDat
         await interaction.deferReply()
 
     const regular = await getRegular(interaction.user.id)
-    if (regular === undefined) {
-        await interaction.editReply({ embeds: [notRegularEmbed] })
-        return
-    }
+    assert(regular !== undefined)
 
     const configLast = regular.config
     const configNew: ConfigData = {

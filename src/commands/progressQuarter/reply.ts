@@ -8,15 +8,9 @@ const { readOptions, doReply } = operations
 const reply: InteractionOperation = async interaction => {
     assert(interaction.isChatInputCommand())
 
-    const { year, quarter, regularRole, associateRole } = readOptions(interaction)
+    const { year, quarter } = readOptions(interaction)
 
-    const realRegularRole = await interaction.guild!.roles.fetch(regularRole.id);
-    const realAssociateRole = await interaction.guild!.roles.fetch(associateRole.id);
-
-    assert(realRegularRole !== null)
-    assert(realAssociateRole !== null)
-
-    await doReply(interaction, year, quarter, realRegularRole, realAssociateRole)
+    await doReply(interaction, year, quarter)
 }
 
 export default reply
