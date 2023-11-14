@@ -1,13 +1,17 @@
-import { Events } from "discord.js";
+﻿import { Events } from "discord.js";
 import { EventContainer } from "../interfaces/events/EventContainer.js";
 import { InteractionOperation } from "../interfaces/commands/InteractionOperation.js";
 import { commands } from "../commands/commands.js";
 import { checkPermission } from "../commands/utils/checkRole/checkPermission.js";
 import { checkGuild } from "../commands/utils/checkRole/checkGuild.js";
+import { checkInitialized } from "../commands/utils/checkInitialized.js";
 
 const callback: InteractionOperation = async interaction => {
     if (interaction.isChatInputCommand()) {
         if (!await checkGuild(interaction))
+            return
+
+        if (interaction.commandName !== "개시" && !await checkInitialized(interaction))
             return
 
         const commandContainer = commands.filter(
