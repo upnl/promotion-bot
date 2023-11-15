@@ -5,7 +5,8 @@ import { registerCommands } from "./commands/registerCommands.js";
 
 const intents: IntentsBitField = new IntentsBitField()
     .add(IntentsBitField.Flags.Guilds)
-    .add(IntentsBitField.Flags.GuildMessages);
+    .add(IntentsBitField.Flags.GuildMessages)
+    .add(IntentsBitField.Flags.GuildPresences);
 
 (async () => {
     const client = new Client({ intents })

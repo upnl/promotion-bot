@@ -39,7 +39,7 @@ export const checkPermission = async (interaction: ChatInputCommandInteraction, 
         }
         else if (await getRegular(interaction.user.id) === undefined) {
             await interaction.reply({ embeds: [unknownRegularEmbed], components })
-            return false
+            return true
         }
         return true
     }

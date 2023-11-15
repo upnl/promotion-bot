@@ -10,7 +10,7 @@ export const checkRegular = async (interaction: ChatInputCommandInteraction, reg
 
     const roleIds = await getRoleIds()
 
-    const regularMember = interaction.guild.members.cache.get(regularId)
+    const regularMember = await interaction.guild.members.fetch(regularId)
 
     assert(regularMember !== undefined)
 

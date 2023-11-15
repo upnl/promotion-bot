@@ -96,9 +96,9 @@ const doReply = async (
     assert(interaction.guild !== null)
 
     const roleIds = await getRoleIds()
-    const regularRole = interaction.guild.roles.cache.get(roleIds.regularRole)
+    const regularRole = await interaction.guild.roles.fetch(roleIds.regularRole)
 
-    if (regularRole === undefined) {
+    if (regularRole === null) {
         await interaction.editReply({ embeds: [regularRoleNotFoundEmbed] })
         return
     }
