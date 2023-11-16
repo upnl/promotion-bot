@@ -11,4 +11,5 @@ export const createMissionPreviewString = (mission: Mission, target: User) =>
 export const createMissionEditPreviewString = (missionNew: Mission, missionLast: Mission, target: User) =>
     `${makeItalic(missionNew.category, missionNew.category !== missionLast.category)} ` +
     `- ${makeItalic(missionNew.content, missionNew.content !== missionLast.content)} ` +
-    `[${makeItalic(`${missionNew.score}점`, missionNew.score !== missionLast.score)}]`
+    `[${makeItalic(`${missionNew.score}점`, missionNew.score !== missionLast.score)}]` +
+    (missionNew.note !== "" ? `\n  - ${makeItalic(missionNew.note, missionNew.note !== missionLast.note)}` : "")

@@ -6,8 +6,7 @@ import { checkPermission } from "../commands/utils/checkRole/checkPermission.js"
 import { checkGuild } from "../commands/utils/checkRole/checkGuild.js";
 import { checkInitialized } from "../commands/utils/checkInitialized.js";
 import { checkDeveloper } from "../commands/utils/checkRole/checkDeveloper.js";
-
-const testing = true
+import { isTesting } from "../isTesting.js";
 
 const callback: InteractionOperation = async interaction => {
     if (interaction.isChatInputCommand()) {
@@ -22,7 +21,7 @@ const callback: InteractionOperation = async interaction => {
         if (commandContainer === undefined)
             return
 
-        if (testing) {
+        if (isTesting) {
             if (!await checkDeveloper(interaction))
                 return
         }

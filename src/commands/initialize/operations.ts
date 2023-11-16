@@ -1,18 +1,7 @@
 ﻿import { ButtonInteraction, ChatInputCommandInteraction, ComponentType, EmbedBuilder, InteractionResponse, Message, Role } from "discord.js"
 import builders from "./builders.js"
 import { errorEmbed } from "../utils/embeds/errorEmbed.js"
-import { getQuarterData, getQuarterDataString } from "../utils/quarterData/getQuarterData.js"
-import { QuarterData } from "../../interfaces/models/QuarterData.js"
-import { nextQuarter } from "../utils/quarterData/nextQuarter.js"
-import { createQuarterDataString } from "../utils/createString/createQuarterDataString.js"
-import { makeBold } from "../utils/createString/markdown.js"
-import assert from "assert"
-import { setQuarterData } from "../utils/quarterData/setQuarterData.js"
 import { setRoleIds } from "../utils/roleId/setRoleIds.js"
-import { RoleIds } from "../../interfaces/models/RoleIds.js"
-import { firebaseDb } from "../../db/firebase.js"
-import { QUARTER, REGULAR } from "../../db/collectionNames.js"
-import { regularConverter } from "../../db/converters/regularConverter.js"
 
 const {
     initializeEmbedPrototype,
@@ -38,13 +27,13 @@ const doConfirm = async (
     try {
         await setRoleIds({ chiefRole: chiefRole.id, regularRole: regularRole.id, associateRole: associateRole.id })
 
-        const successEmbed = new EmbedBuilder(successEmbedPrototype.toJSON())
+        const successEmbed = EmbedBuilder.from(successEmbedPrototype)
             .addFields({ name: "넬장", value: chiefRole.toString(), inline: true })
             .addFields({ name: "정회원", value: regularRole.toString(), inline: true })
             .addFields({ name: "준회원", value: associateRole.toString(), inline: true })
 
         await buttonInteraction.deleteReply()
-        await buttonInteraction.message.edit({ embeds: [successEmbed], components: [] })
+        await interaction.editReply({ embeds: [successEmbed], components: [] })
     }
     catch (e) {
         await buttonInteraction.editReply({ embeds: [errorEmbed] })
@@ -56,8 +45,7 @@ const doCancel = async (
     chiefRole: Role, regularRole: Role, associateRole: Role,
 ) => {
     await buttonInteraction.deferUpdate()
-
-    await buttonInteraction.message.edit({ embeds: [canceledEmbed], components: [] })
+    await interaction.editReply({ embeds: [canceledEmbed], components: [] })
 }
 
 const addCollector = (
