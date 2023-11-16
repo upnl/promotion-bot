@@ -53,11 +53,11 @@ const doConfirm = async (interaction: ChatInputCommandInteraction, buttonInterac
 
         if (success) {
             await buttonInteraction.deleteReply()
-            await interaction.editReply({ embeds: [successEmbed], components: [] })
+            await buttonInteraction.message.edit({ embeds: [successEmbed], components: [] })
         }
         else {
-            await buttonInteraction.deleteReply()
-            await interaction.editReply({ embeds: [duplicateEmbed], components: [] })
+            await buttonInteraction.deferReply()
+            await buttonInteraction.message.edit({ embeds: [duplicateEmbed], components: [] })
         }
     }
     catch (e) {
@@ -68,7 +68,7 @@ const doConfirm = async (interaction: ChatInputCommandInteraction, buttonInterac
 
 const doCancel = async (interaction: ChatInputCommandInteraction, buttonInteraction: ButtonInteraction) => {
     await buttonInteraction.deferUpdate()
-    await interaction.editReply({ embeds: [canceledEmbed], components: [] })
+    await buttonInteraction.message.edit({ embeds: [canceledEmbed], components: [] })
 }
 
 const addCollector = (interaction: ChatInputCommandInteraction, reply: Message<boolean> | InteractionResponse<boolean>) => {

@@ -56,7 +56,7 @@ const doConfirm = async (
             .setDescription(createConfigEditPreviewString(configNew, configLast))
 
         await buttonInteraction.deferUpdate()
-        await interaction.editReply({ embeds: [successEmbed], components: [] })
+        await buttonInteraction.message.edit({ embeds: [successEmbed], components: [] })
     }
     else
         await buttonInteraction.reply({ embeds: [errorEmbed] })
@@ -71,7 +71,7 @@ const doCancel = async (
         .setDescription(createConfigEditPreviewString(configNew, configLast))
 
     await buttonInteraction.deferUpdate()
-    await interaction.editReply({ embeds: [cancelEmbed], components: [] })
+    await buttonInteraction.message.edit({ embeds: [cancelEmbed], components: [] })
 }
 
 const addCollector = (

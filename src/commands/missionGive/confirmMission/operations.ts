@@ -64,7 +64,7 @@ const doConfirm = async (
         .addFields({ name: createMissionPreviewTitle(mission, target), value: createMissionPreviewString(mission, target) })
 
     await buttonInteraction.deleteReply()
-    await interaction.editReply({ embeds: [successEmbed], components: [] })
+    await buttonInteraction.message.edit({ embeds: [successEmbed], components: [] })
 }
 
 const doCancel = async (
@@ -77,7 +77,7 @@ const doCancel = async (
     const cancelEmbed = new EmbedBuilder(cancelEmbedPrototype.toJSON())
         .addFields({ name: createMissionPreviewTitle(mission, target), value: createMissionPreviewString(mission, target) })
 
-    await interaction.editReply({ embeds: [cancelEmbed], components: [] })
+    await buttonInteraction.message.edit({ embeds: [cancelEmbed], components: [] })
 }
 
 const addCollector = (

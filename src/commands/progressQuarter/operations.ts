@@ -51,7 +51,7 @@ const doConfirm = async (
             .setDescription(makeBold(createQuarterDataString(quarterNew)))
 
         await buttonInteraction.deleteReply()
-        await interaction.editReply({ embeds: [successEmbed], components: [] })
+        await buttonInteraction.message.edit({ embeds: [successEmbed], components: [] })
     }
     catch (e) {
         await buttonInteraction.editReply({ embeds: [errorEmbed] })
@@ -67,7 +67,7 @@ const doCancel = async (
     const cancelEmbed = new EmbedBuilder(canceledEmbedPrototype.toJSON())
         .setDescription(makeBold(createQuarterDataString(quarterNew)))
 
-    await interaction.editReply({ embeds: [cancelEmbed], components: [] })
+    await buttonInteraction.message.edit({ embeds: [cancelEmbed], components: [] })
 }
 
 const addCollector = (
