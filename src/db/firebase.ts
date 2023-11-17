@@ -3,9 +3,9 @@ import { getFirestore } from "firebase-admin/firestore"
 
 initializeApp({
     credential: cert({
-        projectId: process.env.PROJECT_ID,
-        clientEmail: process.env.CLIENT_EMAIL,
-        privateKey: process.env.PRIVATE_KEY
+        projectId: process.env.PROMOTIONBOT_PROJECT_ID,
+        clientEmail: process.env.PROMOTIONBOT_TOKEN,
+        privateKey: process.env.PROMOTIONBOT_PRIVATE_KEY
     })
 })
 

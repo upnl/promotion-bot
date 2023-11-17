@@ -14,5 +14,5 @@ const intents: IntentsBitField = new IntentsBitField()
     await registerEvents(client)
     await registerCommands(client)
 
-    await client.login(process.env.TOKEN)
+    await client.login(process.env.PROMOTIONBOT_TOKEN)
 })()
