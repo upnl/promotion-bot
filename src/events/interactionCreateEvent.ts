@@ -2,12 +2,11 @@
 import { EventContainer } from "../interfaces/events/EventContainer.js";
 import { InteractionOperation } from "../interfaces/commands/InteractionOperation.js";
 import { commands } from "../commands/commands.js";
-import { checkPermission } from "../commands/utils/checkRole/checkPermission.js";
-import { checkGuild } from "../commands/utils/checkRole/checkGuild.js";
-import { checkInitialized } from "../commands/utils/checkInitialized.js";
-import { checkDeveloper } from "../commands/utils/checkRole/checkDeveloper.js";
-
-const testing = true
+import { checkPermission } from "../commands/utils/checks/checkPermission.js";
+import { checkGuild } from "../commands/utils/checks/checkGuild.js";
+import { checkInitialized } from "../commands/utils/checks/checkInitialized.js";
+import { checkDeveloper } from "../commands/utils/checks/checkDeveloper.js";
+import { isTesting } from "../isTesting.js";
 
 const callback: InteractionOperation = async interaction => {
     if (interaction.isChatInputCommand()) {
@@ -22,7 +21,8 @@ const callback: InteractionOperation = async interaction => {
         if (commandContainer === undefined)
             return
 
-        if (testing) {
+        if (isTesting) {
+            console.log("what")
             if (!await checkDeveloper(interaction))
                 return
         }

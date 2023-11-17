@@ -1,14 +1,14 @@
 ﻿import builders from "./builders.js"
 import { ButtonInteraction, ChatInputCommandInteraction, ComponentType, EmbedBuilder, InteractionResponse, Message, User } from "discord.js"
 import { getRegular } from "../../../db/actions/memberActions.js"
-import { errorEmbed } from "../../utils/embeds/errorEmbed.js"
+import { errorEmbed } from "../../utils/errorEmbeds.js"
 import { firebaseDb } from "../../../db/firebase.js"
 import { ASSOCIATE, MISSION_PROGRESS, QUARTER, REGULAR } from "../../../db/collectionNames.js"
 import { regularConverter } from "../../../db/converters/regularConverter.js"
 import { missionProgressConverter } from "../../../db/converters/missionConverter.js"
 import { ConfigData, ConfigUpdateData } from "../../../interfaces/models/Config.js"
 import { createConfigEditPreviewString } from "../../utils/createString/createConfigEditPreviewString.js"
-import { getQuarterDataString } from "../../utils/quarterData/getQuarterData.js"
+import { getQuarterDataFooter, getQuarterDataString } from "../../utils/quarterData/getQuarterData.js"
 import assert from "assert"
 
 const {
@@ -56,7 +56,7 @@ const doConfirm = async (
             .setDescription(createConfigEditPreviewString(configNew, configLast))
 
         await buttonInteraction.deferUpdate()
-        await buttonInteraction.message.edit({ embeds: [successEmbed], components: [] })
+        await interaction.editReply({ embeds: [successEmbed.setFooter(await getQuarterDataFooter())], components: [] })
     }
     else
         await buttonInteraction.reply({ embeds: [errorEmbed] })
@@ -71,7 +71,7 @@ const doCancel = async (
         .setDescription(createConfigEditPreviewString(configNew, configLast))
 
     await buttonInteraction.deferUpdate()
-    await buttonInteraction.message.edit({ embeds: [cancelEmbed], components: [] })
+    await interaction.editReply({ embeds: [cancelEmbed.setFooter(await getQuarterDataFooter())], components: [] })
 }
 
 const addCollector = (
@@ -108,7 +108,7 @@ const doReply = async (interaction: ChatInputCommandInteraction, configUpdateDat
     const replyEmbed = new EmbedBuilder(replyEmbedPrototype.toJSON())
         .setDescription(createConfigEditPreviewString(configNew, configLast))
 
-    const reply = await interaction.editReply({ embeds: [replyEmbed], components: [actionRow] })
+    const reply = await interaction.editReply({ embeds: [replyEmbed.setFooter(await getQuarterDataFooter())], components: [actionRow] })
 
     if (!isEditing)
         addCollector(interaction, reply, configUpdateData, configNew, configLast)

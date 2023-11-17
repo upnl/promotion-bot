@@ -3,7 +3,7 @@ import { ReplyComponents } from "../../../interfaces/ReplyComponents.js"
 import { CommandType } from "../../../interfaces/commands/CommandTypes.js"
 import assert from "assert"
 import { getRoleIds } from "../roleId/getRoleIds.js"
-import { notAssociateEmbed, notChiefEmbed, notOwnerEmbed, notRegularEmbed, unknownAssociateEmbed, unknownRegularEmbed } from "../embeds/errorEmbed.js"
+import { notAssociateEmbed, notChiefEmbed, notOwnerEmbed, notRegularEmbed, unknownAssociateEmbed, unknownRegularEmbed } from "../errorEmbeds.js"
 import { getAssociate, getRegular } from "../../../db/actions/memberActions.js"
 
 export const checkPermission = async (interaction: ChatInputCommandInteraction, type: CommandType, components?: ReplyComponents[]): Promise<boolean> => {

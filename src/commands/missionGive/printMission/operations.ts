@@ -1,13 +1,9 @@
 ﻿import { getMissionAll } from "../../../db/actions/missionActions.js"
 import { getMissionProgress } from "../../../db/actions/missionProgressActions.js"
-import { checkAssociate } from "../../utils/checkRole/checkAssociate.js"
+import { checkAssociate } from "../../utils/checks/checkAssociate.js"
 import { createMissionMapPrintString, createProgressPrintString } from "../../utils/createString/createMissionPrintString.js"
-import { errorEmbed } from "../../utils/embeds/errorEmbed.js"
-import builders from "./builders.js"
+import { errorEmbed } from "../../utils/errorEmbeds.js"
 import { ChatInputCommandInteraction, ComponentType, EmbedBuilder, InteractionResponse, Message, User, UserSelectMenuInteraction } from "discord.js"
-
-const {
-} = builders
 
 const readOptions = (interaction: ChatInputCommandInteraction) => ({
     target: interaction.options.getUser("준회원", true)

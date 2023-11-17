@@ -5,8 +5,8 @@ import { regularConverter } from "../../db/converters/regularConverter.js"
 import { associateConverter } from "../../db/converters/associateConverter.js"
 import { missionProgressConverter } from "../../db/converters/missionConverter.js"
 import builders from "./builders.js"
-import { errorEmbed, notAssociateEmbed } from "../utils/embeds/errorEmbed.js"
-import { getQuarterDataString } from "../utils/quarterData/getQuarterData.js"
+import { errorEmbed, notAssociateEmbed } from "../utils/errorEmbeds.js"
+import { getQuarterDataFooter, getQuarterDataString } from "../utils/quarterData/getQuarterData.js"
 import assert from "assert"
 import { getRoleIds } from "../utils/roleId/getRoleIds.js"
 
@@ -53,11 +53,11 @@ const doConfirm = async (interaction: ChatInputCommandInteraction, buttonInterac
 
         if (success) {
             await buttonInteraction.deleteReply()
-            await buttonInteraction.message.edit({ embeds: [successEmbed], components: [] })
+            await interaction.editReply({ embeds: [successEmbed.setFooter(await getQuarterDataFooter())], components: [] })
         }
         else {
             await buttonInteraction.deferReply()
-            await buttonInteraction.message.edit({ embeds: [duplicateEmbed], components: [] })
+            await interaction.editReply({ embeds: [duplicateEmbed.setFooter(await getQuarterDataFooter())], components: [] })
         }
     }
     catch (e) {
@@ -68,7 +68,7 @@ const doConfirm = async (interaction: ChatInputCommandInteraction, buttonInterac
 
 const doCancel = async (interaction: ChatInputCommandInteraction, buttonInteraction: ButtonInteraction) => {
     await buttonInteraction.deferUpdate()
-    await buttonInteraction.message.edit({ embeds: [canceledEmbed], components: [] })
+    await interaction.editReply({ embeds: [canceledEmbed.setFooter(await getQuarterDataFooter())], components: [] })
 }
 
 const addCollector = (interaction: ChatInputCommandInteraction, reply: Message<boolean> | InteractionResponse<boolean>) => {
@@ -101,7 +101,7 @@ const doReply = async (interaction: ChatInputCommandInteraction, isEditing: bool
         return
     }
 
-    const reply = await interaction.editReply({ embeds: [applyEmbed], components: [actionRow] });
+    const reply = await interaction.editReply({ embeds: [applyEmbed.setFooter(await getQuarterDataFooter())], components: [actionRow] });
 
     if (!isEditing)
         addCollector(interaction, reply)

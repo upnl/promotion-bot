@@ -3,7 +3,7 @@ import { getRoleIds } from "../roleId/getRoleIds.js";
 import assert from "assert";
 import { getRegular } from "../../../db/actions/memberActions.js";
 import { ReplyComponents } from "../../../interfaces/ReplyComponents.js";
-import { selectNotRegularEmbed, selectUnknownRegularEmbed } from "../embeds/errorEmbed.js";
+import { selectNotRegularEmbed, selectUnknownRegularEmbed } from "../errorEmbeds.js";
 
 export const checkRegular = async (interaction: ChatInputCommandInteraction, regularId: string, components?: ReplyComponents[]): Promise<boolean> => {
     assert(interaction.guild !== null)

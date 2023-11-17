@@ -2,11 +2,12 @@
 import { ButtonInteraction, ChatInputCommandInteraction, ComponentType, EmbedBuilder, InteractionResponse, Message, User } from "discord.js"
 import { getAssociate, getRegular } from "../../../db/actions/memberActions.js"
 import { deleteMission, getMission } from "../../../db/actions/missionActions.js"
-import { errorEmbed } from "../../utils/embeds/errorEmbed.js"
+import { errorEmbed } from "../../utils/errorEmbeds.js"
 import { Mission } from "../../../interfaces/models/Mission.js"
 import { createMissionPreviewString, createMissionPreviewTitle } from "../../utils/createString/createMissionPreviewString.js"
-import { checkRegular } from "../../utils/checkRole/checkRegular.js"
-import { checkAssociate } from "../../utils/checkRole/checkAssociate.js"
+import { checkRegular } from "../../utils/checks/checkRegular.js"
+import { checkAssociate } from "../../utils/checks/checkAssociate.js"
+import { getQuarterDataFooter } from "../../utils/quarterData/getQuarterData.js"
 
 const {
     missionNotFoundEmbed,
@@ -38,7 +39,7 @@ const doConfirm = async (
             .addFields({ name: createMissionPreviewTitle(mission, target), value: createMissionPreviewString(mission, target) })
 
         await buttonInteraction.deleteReply()
-        await buttonInteraction.message.edit({ embeds: [successEmbed], components: [] })
+        await interaction.editReply({ embeds: [successEmbed.setFooter(await getQuarterDataFooter())], components: [] })
     }
     else
         await buttonInteraction.editReply({ embeds: [errorEmbed] })
@@ -54,7 +55,7 @@ const doCancel = async (
     const cancelEmbed = new EmbedBuilder(cancelEmbedPrototype.toJSON())
         .addFields({ name: createMissionPreviewTitle(mission, target), value: createMissionPreviewString(mission, target) })
 
-    await buttonInteraction.message.edit({ embeds: [cancelEmbed], components: [] })
+    await interaction.editReply({ embeds: [cancelEmbed.setFooter(await getQuarterDataFooter())], components: [] })
 }
 
 const addCollector = (
@@ -95,7 +96,7 @@ const doReply = async (interaction: ChatInputCommandInteraction, target: User, c
 
     const replyEmbed = new EmbedBuilder(replyEmbedPrototype.toJSON())
         .addFields({ name: createMissionPreviewTitle(mission, target), value: createMissionPreviewString(mission, target) })
-    const reply = await interaction.editReply({ embeds: [replyEmbed], components: [actionRow] });
+    const reply = await interaction.editReply({ embeds: [replyEmbed.setFooter(await getQuarterDataFooter())], components: [actionRow] });
 
     if (!isEditing)
         addCollector(interaction, reply, target, category, index, mission)

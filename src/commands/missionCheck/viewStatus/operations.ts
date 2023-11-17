@@ -1,7 +1,8 @@
 ﻿import { ChatInputCommandInteraction, EmbedBuilder } from "discord.js"
-import { errorEmbed } from "../../utils/embeds/errorEmbed.js"
+import { errorEmbed } from "../../utils/errorEmbeds.js"
 import { getMissionProgressAll } from "../../../db/actions/missionProgressActions.js"
 import { createProgressString } from "../../utils/createString/createMissionString.js"
+import { getQuarterDataFooter } from "../../utils/quarterData/getQuarterData.js"
 
 const doReply = async (interaction: ChatInputCommandInteraction, isEditing: boolean = false) => {
     if (!isEditing)
@@ -21,7 +22,7 @@ const doReply = async (interaction: ChatInputCommandInteraction, isEditing: bool
             inline: false
         })))
 
-    await interaction.editReply({ embeds: [replyEmbed] })
+    await interaction.editReply({ embeds: [replyEmbed.setFooter(await getQuarterDataFooter())] })
 }
 
 export default {

@@ -1,15 +1,15 @@
 ﻿import builders from "./builders.js"
 import { ButtonInteraction, ChatInputCommandInteraction, ComponentType, EmbedBuilder, InteractionResponse, Message, User } from "discord.js"
 import { getMission, getMissionDocRef } from "../../../db/actions/missionActions.js"
-import { errorEmbed } from "../../utils/embeds/errorEmbed.js"
+import { errorEmbed } from "../../utils/errorEmbeds.js"
 import { Mission } from "../../../interfaces/models/Mission.js"
 import { FieldValue } from "firebase-admin/firestore"
 import { createMissionPreviewString, createMissionPreviewTitle } from "../../utils/createString/createMissionPreviewString.js"
 import { firebaseDb } from "../../../db/firebase.js"
 import { missionConverter, missionProgressConverter } from "../../../db/converters/missionConverter.js"
 import { ASSOCIATE, MISSION_PROGRESS, QUARTER } from "../../../db/collectionNames.js"
-import { getQuarterDataString } from "../../utils/quarterData/getQuarterData.js"
-import { checkAssociate } from "../../utils/checkRole/checkAssociate.js"
+import { getQuarterDataFooter, getQuarterDataString } from "../../utils/quarterData/getQuarterData.js"
+import { checkAssociate } from "../../utils/checks/checkAssociate.js"
 
 const {
     missionNotFoundEmbed,
@@ -64,7 +64,7 @@ const doConfirm = async (
         .addFields({ name: createMissionPreviewTitle(mission, target), value: createMissionPreviewString(mission, target) })
 
     await buttonInteraction.deleteReply()
-    await buttonInteraction.message.edit({ embeds: [successEmbed], components: [] })
+    await interaction.editReply({ embeds: [successEmbed.setFooter(await getQuarterDataFooter())], components: [] })
 }
 
 const doCancel = async (
@@ -77,7 +77,7 @@ const doCancel = async (
     const cancelEmbed = new EmbedBuilder(cancelEmbedPrototype.toJSON())
         .addFields({ name: createMissionPreviewTitle(mission, target), value: createMissionPreviewString(mission, target) })
 
-    await buttonInteraction.message.edit({ embeds: [cancelEmbed], components: [] })
+    await interaction.editReply({ embeds: [cancelEmbed.setFooter(await getQuarterDataFooter())], components: [] })
 }
 
 const addCollector = (
@@ -112,7 +112,7 @@ const doReply = async (
     const mission = await getMission(interaction.user.id, isUniversal ? interaction.user.id : target.id, category, index)
 
     if (mission === null) {
-        await interaction.editReply({ embeds: [missionNotFoundEmbed] })
+        await interaction.editReply({ embeds: [missionNotFoundEmbed.setFooter(await getQuarterDataFooter())] })
         return
     }
     if (mission === undefined) {
@@ -120,14 +120,14 @@ const doReply = async (
         return
     }
     if (mission.completed.includes(target.id)) {
-        await interaction.editReply({ embeds: [alreadyCompleteEmbed] })
+        await interaction.editReply({ embeds: [alreadyCompleteEmbed.setFooter(await getQuarterDataFooter())] })
         return
     }
 
     const replyEmbed = new EmbedBuilder()
         .setTitle(`${target.displayName}의 승격조건 달성을 확인합니까?`)
         .addFields({ name: createMissionPreviewTitle(mission, target), value: createMissionPreviewString(mission, target) })
-    const reply = await interaction.editReply({ embeds: [replyEmbed], components: [actionRow] });
+    const reply = await interaction.editReply({ embeds: [replyEmbed.setFooter(await getQuarterDataFooter())], components: [actionRow] });
 
     if (!isEditing)
         addCollector(interaction, reply, target, isUniversal, category, index, mission)

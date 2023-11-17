@@ -1,7 +1,7 @@
 ﻿import { ButtonInteraction, ChatInputCommandInteraction, ComponentType, EmbedBuilder, InteractionResponse, Message, Role } from "discord.js"
 import builders from "./builders.js"
-import { errorEmbed } from "../utils/embeds/errorEmbed.js"
-import { getQuarterData, getQuarterDataString } from "../utils/quarterData/getQuarterData.js"
+import { errorEmbed } from "../utils/errorEmbeds.js"
+import { getQuarterData, getQuarterDataFooter, getQuarterDataString } from "../utils/quarterData/getQuarterData.js"
 import { QuarterData } from "../../interfaces/models/QuarterData.js"
 import { nextQuarter } from "../utils/quarterData/nextQuarter.js"
 import { createQuarterDataString } from "../utils/createString/createQuarterDataString.js"
@@ -51,7 +51,7 @@ const doConfirm = async (
             .setDescription(makeBold(createQuarterDataString(quarterNew)))
 
         await buttonInteraction.deleteReply()
-        await buttonInteraction.message.edit({ embeds: [successEmbed], components: [] })
+        await interaction.editReply({ embeds: [successEmbed], components: [] })
     }
     catch (e) {
         await buttonInteraction.editReply({ embeds: [errorEmbed] })
@@ -67,7 +67,7 @@ const doCancel = async (
     const cancelEmbed = new EmbedBuilder(canceledEmbedPrototype.toJSON())
         .setDescription(makeBold(createQuarterDataString(quarterNew)))
 
-    await buttonInteraction.message.edit({ embeds: [cancelEmbed], components: [] })
+    await interaction.editReply({ embeds: [cancelEmbed], components: [] })
 }
 
 const addCollector = (

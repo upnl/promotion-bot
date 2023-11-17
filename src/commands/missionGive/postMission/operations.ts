@@ -2,9 +2,10 @@
 import { ButtonInteraction, ChatInputCommandInteraction, ComponentType, EmbedBuilder, InteractionResponse, Message, User } from "discord.js"
 import { postMission } from "../../../db/actions/missionActions.js"
 import { Mission } from "../../../interfaces/models/Mission.js"
-import { errorEmbed } from "../../utils/embeds/errorEmbed.js"
+import { errorEmbed } from "../../utils/errorEmbeds.js"
 import { createMissionPreviewString, createMissionPreviewTitle } from "../../utils/createString/createMissionPreviewString.js"
-import { checkAssociate } from "../../utils/checkRole/checkAssociate.js"
+import { checkAssociate } from "../../utils/checks/checkAssociate.js"
+import { getQuarterDataFooter } from "../../utils/quarterData/getQuarterData.js"
 
 const {
     replyEmbedPrototype,
@@ -33,7 +34,7 @@ const doConfirm = async (interaction: ChatInputCommandInteraction, buttonInterac
             .addFields({ name: createMissionPreviewTitle(mission, target), value: createMissionPreviewString(mission, target) })
 
         await buttonInteraction.deleteReply()
-        await buttonInteraction.message.edit({ embeds: [successEmbed], components: [] })
+        await interaction.editReply({ embeds: [successEmbed.setFooter(await getQuarterDataFooter())], components: [] })
     }
     else
         await buttonInteraction.editReply({ embeds: [errorEmbed] })
@@ -45,7 +46,7 @@ const doCancel = async (interaction: ChatInputCommandInteraction, buttonInteract
     const cancelEmbed = new EmbedBuilder(cancelEmbedPrototype.toJSON())
         .addFields({ name: createMissionPreviewTitle(mission, target), value: createMissionPreviewString(mission, target) })
 
-    await buttonInteraction.message.edit({ embeds: [cancelEmbed], components: [] })
+    await interaction.editReply({ embeds: [cancelEmbed.setFooter(await getQuarterDataFooter())], components: [] })
 }
 
 const addCollector = async (
@@ -74,7 +75,7 @@ const doReply = async (interaction: ChatInputCommandInteraction, target: User, m
 
     const replyEmbed = new EmbedBuilder(replyEmbedPrototype.toJSON())
         .addFields({ name: createMissionPreviewTitle(mission, target), value: createMissionPreviewString(mission, target) })
-    const reply = await interaction.editReply({ embeds: [replyEmbed], components: [actionRow] });
+    const reply = await interaction.editReply({ embeds: [replyEmbed.setFooter(await getQuarterDataFooter())], components: [actionRow] });
 
     if (!isEditing)
         addCollector(interaction, reply, target, mission)

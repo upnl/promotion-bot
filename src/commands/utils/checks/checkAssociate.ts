@@ -3,7 +3,7 @@ import { getRoleIds } from "../roleId/getRoleIds.js";
 import assert from "assert";
 import { getAssociate } from "../../../db/actions/memberActions.js";
 import { ReplyComponents } from "../../../interfaces/ReplyComponents.js";
-import { selectNotAssociateEmbed, selectNotAssociateOrSelfEmbed, selectUnknownAssociateEmbed } from "../embeds/errorEmbed.js";
+import { selectNotAssociateEmbed, selectNotAssociateOrSelfEmbed, selectUnknownAssociateEmbed } from "../errorEmbeds.js";
 
 export const checkAssociate = async (
     interaction: ChatInputCommandInteraction,

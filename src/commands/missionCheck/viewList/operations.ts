@@ -1,13 +1,15 @@
 ﻿import { getMissionAll } from "../../../db/actions/missionActions.js"
 import { getMissionProgress } from "../../../db/actions/missionProgressActions.js"
-import { checkRegular } from "../../utils/checkRole/checkRegular.js"
+import { checkRegular } from "../../utils/checks/checkRegular.js"
 import { createMissionMapString, createProgressString } from "../../utils/createString/createMissionString.js"
-import { errorEmbed } from "../../utils/embeds/errorEmbed.js"
+import { errorEmbed } from "../../utils/errorEmbeds.js"
+import { getQuarterDataFooter } from "../../utils/quarterData/getQuarterData.js"
 import builders from "./builders.js"
 import { ChatInputCommandInteraction, ComponentType, EmbedBuilder, InteractionResponse, Message, User, UserSelectMenuInteraction } from "discord.js"
 
 const {
     noRegularEmbed,
+    viewListEmbedPrototype,
     REGULAR_MENU_ID,
     actionRow
 } = builders
@@ -42,7 +44,7 @@ const doReply = async (interaction: ChatInputCommandInteraction, giver: User | n
         await interaction.deferReply()
 
     if (giver === null) {
-        const reply = await interaction.editReply({ embeds: [noRegularEmbed], components: [actionRow] })
+        const reply = await interaction.editReply({ embeds: [noRegularEmbed.setFooter(await getQuarterDataFooter())], components: [actionRow] })
         if (!isEditing)
             addCollector(interaction, reply, giver)
         return
@@ -61,13 +63,13 @@ const doReply = async (interaction: ChatInputCommandInteraction, giver: User | n
     }
     const [missionUniversal, missionSpecific] = missions
 
-    const replyEmbed = new EmbedBuilder()
+    const replyEmbed = new EmbedBuilder(viewListEmbedPrototype.toJSON())
         .setTitle(`${interaction.user.displayName}의 승격 조건 : ${giver.displayName}`)
         .addFields({ name: "달성 현황", value: createProgressString(progress.currentScore, progress.goalScore), inline: false })
         .addFields({ name: "공통 조건", value: createMissionMapString(missionUniversal, interaction.user.id), inline: false })
         .addFields({ name: "개인 조건", value: createMissionMapString(missionSpecific, interaction.user.id), inline: false })
 
-    const reply = await interaction.editReply({ embeds: [replyEmbed], components: [actionRow] })
+    const reply = await interaction.editReply({ embeds: [replyEmbed.setFooter(await getQuarterDataFooter())], components: [actionRow] })
 
     if (!isEditing)
         addCollector(interaction, reply, giver)

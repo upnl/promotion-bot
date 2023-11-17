@@ -1,13 +1,15 @@
 ﻿import { getMissionAll } from "../../../db/actions/missionActions.js"
 import { getMissionProgress } from "../../../db/actions/missionProgressActions.js"
-import { checkAssociate } from "../../utils/checkRole/checkAssociate.js"
+import { checkAssociate } from "../../utils/checks/checkAssociate.js"
 import { createMissionMapString, createProgressString } from "../../utils/createString/createMissionString.js"
-import { errorEmbed } from "../../utils/embeds/errorEmbed.js"
+import { errorEmbed } from "../../utils/errorEmbeds.js"
+import { getQuarterDataFooter } from "../../utils/quarterData/getQuarterData.js"
 import builders from "./builders.js"
 import { ChatInputCommandInteraction, ComponentType, EmbedBuilder, InteractionResponse, Message, User, UserSelectMenuInteraction } from "discord.js"
 
 const {
     noAssociateEmbed,
+    viewMissionListEmbedPrototype,
     ASSOCIATE_MENU_ID,
     actionRow
 } = builders
@@ -42,7 +44,7 @@ const doReply = async (interaction: ChatInputCommandInteraction, target: User | 
         await interaction.deferReply()
 
     if (target === null) {
-        const reply = await interaction.editReply({ embeds: [noAssociateEmbed], components: [actionRow] })
+        const reply = await interaction.editReply({ embeds: [noAssociateEmbed.setFooter(await getQuarterDataFooter())], components: [actionRow] })
         if (!isEditing)
             addCollector(interaction, reply, target)
         return
@@ -59,7 +61,7 @@ const doReply = async (interaction: ChatInputCommandInteraction, target: User | 
 
         const [missionUniversal, _] = missions
 
-        replyEmbed = new EmbedBuilder()
+        replyEmbed = new EmbedBuilder(viewMissionListEmbedPrototype.toJSON())
             .setTitle(`공통 승격 조건: ${interaction.user.displayName}`)
             .addFields({ name: "공통 조건", value: createMissionMapString(missionUniversal, interaction.user.id), inline: false })
     }
@@ -80,14 +82,14 @@ const doReply = async (interaction: ChatInputCommandInteraction, target: User | 
 
         console.log(missionSpecific.size);
 
-        replyEmbed = new EmbedBuilder()
+        replyEmbed = new EmbedBuilder(viewMissionListEmbedPrototype.toJSON())
             .setTitle(`${target.displayName}의 승격 조건 : ${interaction.user.displayName}`)
             .addFields({ name: "달성 현황", value: createProgressString(progress.currentScore, progress.goalScore), inline: false })
             .addFields({ name: "공통 조건", value: createMissionMapString(missionUniversal, target.id), inline: false })
             .addFields({ name: "개인 조건", value: createMissionMapString(missionSpecific, target.id), inline: false })
     }
 
-    const reply = await interaction.editReply({ embeds: [replyEmbed], components: [actionRow] })
+    const reply = await interaction.editReply({ embeds: [replyEmbed.setFooter(await getQuarterDataFooter())], components: [actionRow] })
 
     if (!isEditing)
         addCollector(interaction, reply, target)
