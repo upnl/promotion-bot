@@ -1,2 +1,0 @@
-C:\Users\andre\source\repos\PromotionBot\obj\Debug\PromotionBot.esproj.SuggestedBindingRedirects.cache
-C:\Users\andre\source\repos\PromotionBot\obj\Debug\PromotionBot.esproj.CoreCompileInputs.cache
