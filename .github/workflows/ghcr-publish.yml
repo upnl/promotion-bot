@@ -16,4 +16,4 @@ jobs:
       run: | 
         docker login --username coinmoles --password ${{ secrets.PERSONAL_ACCESS_TOKEN }} ghcr.io
         docker build . --tag ghcr.io/coinmoles/promotion-bot:$(date +%s)
-        docker push . ghcr.io/coinmoles/promotion-bot:$(date +%s)
+        docker push ghcr.io/coinmoles/promotion-bot:$(date +%s)
