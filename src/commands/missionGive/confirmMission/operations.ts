@@ -33,7 +33,7 @@ const doConfirm = async (
     target: User, isUniversal: boolean, category: string, index: number,
     mission: Mission
 ) => {
-    await buttonInteraction.deferReply()
+    await buttonInteraction.deferReply({ephemeral: true})
 
     const result = firebaseDb.runTransaction(async transaction => {
         const missionDocRef = await getMissionDocRef(interaction.user.id, isUniversal ? interaction.user.id : target.id, category, index, transaction)
@@ -104,7 +104,7 @@ const doReply = async (
     isEditing: boolean = false
 ) => {
     if (!isEditing)
-        await interaction.deferReply()
+        await interaction.deferReply({ephemeral: true})
 
     if (!await checkAssociate(interaction, target.id, true))
         return

@@ -25,7 +25,7 @@ const readOptions = (interaction: ChatInputCommandInteraction) => ({
 })
 
 const doConfirm = async (interaction: ChatInputCommandInteraction, buttonInteraction: ButtonInteraction, target: User, mission: Mission) => {
-    await buttonInteraction.deferReply()
+    await buttonInteraction.deferReply({ephemeral: true})
 
     const success = await postMission(mission)
 
@@ -68,7 +68,7 @@ const addCollector = async (
 
 const doReply = async (interaction: ChatInputCommandInteraction, target: User, mission: Mission, isEditing: boolean = false) => {
     if (!isEditing)
-        await interaction.deferReply()
+        await interaction.deferReply({ephemeral: true})
 
     if (!await checkAssociate(interaction, target.id, true))
         return

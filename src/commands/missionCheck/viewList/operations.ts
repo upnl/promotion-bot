@@ -41,7 +41,7 @@ const addCollector = (
 
 const doReply = async (interaction: ChatInputCommandInteraction, giver: User | null, isEditing: boolean = false) => {
     if (!isEditing)
-        await interaction.deferReply()
+        await interaction.deferReply({ephemeral: true})
 
     if (giver === null) {
         const reply = await interaction.editReply({ embeds: [noRegularEmbed.setFooter(await getQuarterDataFooter())], components: [actionRow] })

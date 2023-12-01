@@ -30,7 +30,7 @@ const doConfirm = async (
     target: User, category: string, index: number,
     mission: Mission
 ) => {
-    await buttonInteraction.deferReply()
+    await buttonInteraction.deferReply({ephemeral: true})
 
     const success = await deleteMission(interaction.user.id, target.id, category, index)
 
@@ -78,7 +78,7 @@ const addCollector = (
 
 const doReply = async (interaction: ChatInputCommandInteraction, target: User, category: string, index: number, isEditing: boolean = false) => {
     if (!isEditing)
-        await interaction.deferReply()
+        await interaction.deferReply({ephemeral: true})
 
     if (!await checkAssociate(interaction, target.id, true))
         return

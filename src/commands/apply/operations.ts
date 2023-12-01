@@ -21,7 +21,7 @@ const {
 } = builders
 
 const doConfirm = async (interaction: ChatInputCommandInteraction, buttonInteraction: ButtonInteraction) => {
-    await buttonInteraction.deferReply()
+    await buttonInteraction.deferReply({ ephemeral: true })
 
     try {
         const associateDocRef = firebaseDb
@@ -56,7 +56,7 @@ const doConfirm = async (interaction: ChatInputCommandInteraction, buttonInterac
             await interaction.editReply({ embeds: [successEmbed.setFooter(await getQuarterDataFooter())], components: [] })
         }
         else {
-            await buttonInteraction.deferReply()
+            await buttonInteraction.deferReply({ephemeral: true})
             await interaction.editReply({ embeds: [duplicateEmbed.setFooter(await getQuarterDataFooter())], components: [] })
         }
     }
@@ -86,7 +86,7 @@ const addCollector = (interaction: ChatInputCommandInteraction, reply: Message<b
 
 const doReply = async (interaction: ChatInputCommandInteraction, isEditing: boolean = false) => {
     if (!isEditing)
-        await interaction.deferReply()
+        await interaction.deferReply({ ephemeral: true })
 
     assert(interaction.guild !== null)
 

@@ -94,7 +94,7 @@ const addCollector = (
 
 const doReply = async (interaction: ChatInputCommandInteraction, configUpdateData: ConfigUpdateData, isEditing: boolean = false) => {
     if (!isEditing)
-        await interaction.deferReply()
+        await interaction.deferReply({ephemeral: true})
 
     const regular = await getRegular(interaction.user.id)
     assert(regular !== undefined)

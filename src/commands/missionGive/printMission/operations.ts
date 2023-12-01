@@ -11,7 +11,7 @@ const readOptions = (interaction: ChatInputCommandInteraction) => ({
 
 const doReply = async (interaction: ChatInputCommandInteraction, target: User, isEditing: boolean = false) => {
     if (!isEditing)
-        await interaction.deferReply()
+        await interaction.deferReply({ephemeral: true})
 
     if (!await checkAssociate(interaction, target.id))
         return

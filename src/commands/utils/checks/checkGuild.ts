@@ -4,7 +4,7 @@ import { notInGuildEmbed } from "../errorEmbeds.js"
 
 export const checkGuild = async (interaction: ChatInputCommandInteraction, components?: ReplyComponents[]): Promise<boolean> => {
     if (interaction.guild === null || interaction.guild.id !== process.env.GUILD_ID) {
-        await interaction.reply({ embeds: [notInGuildEmbed], components })
+        await interaction.reply({ embeds: [notInGuildEmbed], components, ephemeral: true })
         return false
     }
 

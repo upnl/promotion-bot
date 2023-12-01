@@ -33,7 +33,7 @@ const doConfirm = async (
     interaction: ChatInputCommandInteraction, buttonInteraction: ButtonInteraction,
     chiefRole: Role, regularRole: Role, associateRole: Role,
 ) => {
-    await buttonInteraction.deferReply()
+    await buttonInteraction.deferReply({ephemeral: true})
 
     try {
         await setRoleIds({ chiefRole: chiefRole.id, regularRole: regularRole.id, associateRole: associateRole.id })
@@ -81,7 +81,7 @@ const doReply = async (
     chiefRole: Role, regularRole: Role, associateRole: Role,
     isEditing: boolean = false
 ) => {
-    await interaction.deferReply()
+    await interaction.deferReply({ ephemeral: true })
 
     const replyEmbed = new EmbedBuilder(initializeEmbedPrototype.toJSON())
         .addFields({ name: "넬장", value: chiefRole.toString(), inline: true })

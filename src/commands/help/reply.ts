@@ -8,7 +8,7 @@ const { createHelpEmbed } = builders
 const reply = async (interaction: Interaction) => {
     assert(interaction.isRepliable())
 
-    await interaction.reply({ embeds: [createHelpEmbed()] })
+    await interaction.reply({ embeds: [createHelpEmbed()], ephemeral: true })
 }
 
 export default reply

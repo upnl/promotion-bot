@@ -7,6 +7,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="src\interfaces\events\" />
+    <Folder Include="src\NewFolder\" />
   </ItemGroup>
   <ProjectExtensions>
     <VisualStudio>

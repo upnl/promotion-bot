@@ -6,7 +6,7 @@ import { getQuarterDataFooter } from "../../utils/quarterData/getQuarterData.js"
 
 const doReply = async (interaction: ChatInputCommandInteraction, isEditing: boolean = false) => {
     if (!isEditing)
-        await interaction.deferReply()
+        await interaction.deferReply({ephemeral: true})
 
     const progresses = await getMissionProgressAll(interaction.client, interaction.user.id)
     if (progresses === undefined) {
