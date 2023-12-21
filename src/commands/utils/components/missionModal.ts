@@ -64,7 +64,7 @@ export const createMissionModal = (
         .addComponents(new ActionRowBuilder<TextInputBuilder>().addComponents(missionNoteInput))
 }
 
-export const getMissionModalValue = (interaction: ModalSubmitInteraction, target: User, completed?: string[]): Mission | undefined => {
+export const getMissionModalMission = (interaction: ModalSubmitInteraction, target: User, completed?: string[]): Mission | undefined => {
     const category = interaction.fields.getTextInputValue(missionCategoryInputId)
     const content = interaction.fields.getTextInputValue(missionContentInputId)
     const note = interaction.fields.getTextInputValue(missionNoteInputId)

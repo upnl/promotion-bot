@@ -2,8 +2,8 @@
 import { postMission } from "../../../db/actions/missionActions.js"
 import { Mission } from "../../../interfaces/models/Mission.js"
 import { checkAssociate } from "../../utils/checks/checkAssociate.js"
-import { confirmCollect, confirmFilter, confirmTimeout, createConfirmActionRow } from "../../utils/components/confirmActionRow.js"
-import { createMissionModal, createMissionModalId, getMissionModalValue } from "../../utils/components/missionModal.js"
+import { addConfirmCollector, confirmCollect, confirmFilter, confirmTimeout, createConfirmActionRow } from "../../utils/components/confirmActionRow.js"
+import { createMissionModal, createMissionModalId, getMissionModalMission } from "../../utils/components/missionModal.js"
 import { createMissionPreviewString, createMissionPreviewTitle } from "../../utils/createString/createMissionPreviewString.js"
 import { errorEmbed } from "../../utils/errorEmbeds.js"
 import { getQuarterDataFooter } from "../../utils/quarterData/getQuarterData.js"
@@ -47,20 +47,6 @@ const onCancel = (modalInteraction: ModalSubmitInteraction, target: User, missio
         await modalInteraction.editReply({ embeds: [cancelEmbed.setFooter(await getQuarterDataFooter())], components: [] })
     }
 
-const addCollector = async (
-    modalInteraction: ModalSubmitInteraction, reply: Message<boolean> | InteractionResponse<boolean>,
-    target: User, mission: Mission
-) => {
-    const collector = reply.createMessageComponentCollector({
-        filter: confirmFilter(commandId, modalInteraction.user),
-        componentType: ComponentType.Button, time: 10_000, max: 1
-    })
-
-    collector.on("collect", confirmCollect(commandId, modalInteraction.user,
-        onConfirm(modalInteraction, target, mission), onCancel(modalInteraction, target, mission)))
-    collector.on('end', confirmTimeout(modalInteraction));
-}
-
 export const doReply = async (interaction: ChatInputCommandInteraction, target: User, isEditing: boolean = false) => {
     if (!await checkAssociate(interaction, target.id, true))
         return
@@ -74,22 +60,26 @@ export const doReply = async (interaction: ChatInputCommandInteraction, target: 
     if (modalInteraction === null)
         return
 
-    const mission = getMissionModalValue(modalInteraction, target)
+    const mission = getMissionModalMission(modalInteraction, target)
     if (mission === undefined) {
         await modalInteraction.reply("점수가 숫자가 아닙니다!")
         return
     }
-
-    const replyEmbed = EmbedBuilder.from(replyEmbedPrototype)
-        .addFields({ name: createMissionPreviewTitle(mission, target), value: createMissionPreviewString(mission, target) })
-        .setFooter(await getQuarterDataFooter())
-
+    
     const reply = await modalInteraction.reply({
-        embeds: [replyEmbed],
+        embeds: [
+            EmbedBuilder.from(replyEmbedPrototype)
+                .addFields({ name: createMissionPreviewTitle(mission, target), value: createMissionPreviewString(mission, target) })
+                .setFooter(await getQuarterDataFooter())
+        ],
         components: [createConfirmActionRow(commandId, modalInteraction.user)],
         ephemeral: true,
         fetchReply: true
     });
 
-    await addCollector(modalInteraction, reply, target, mission)
+    await addConfirmCollector(
+        commandId, modalInteraction, reply,
+        onConfirm(modalInteraction, target, mission),
+        onCancel(modalInteraction, target, mission)
+    )
 }
