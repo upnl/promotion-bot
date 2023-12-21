@@ -22,7 +22,6 @@ const callback: InteractionOperation = async interaction => {
             return
 
         if (isTesting) {
-            console.log("what")
             if (!await checkDeveloper(interaction))
                 return
         }
