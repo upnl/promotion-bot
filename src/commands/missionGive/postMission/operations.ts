@@ -1,8 +1,8 @@
-﻿import { ButtonInteraction, ChatInputCommandInteraction, ComponentType, EmbedBuilder, InteractionResponse, Message, ModalSubmitInteraction, User } from "discord.js"
+﻿import { ButtonInteraction, ChatInputCommandInteraction, EmbedBuilder, ModalSubmitInteraction, User } from "discord.js"
 import { postMission } from "../../../db/actions/missionActions.js"
 import { Mission } from "../../../interfaces/models/Mission.js"
 import { checkAssociate } from "../../utils/checks/checkAssociate.js"
-import { addConfirmCollector, confirmCollect, confirmFilter, confirmTimeout, createConfirmActionRow } from "../../utils/components/confirmActionRow.js"
+import { addConfirmCollector, createConfirmActionRow } from "../../utils/components/confirmActionRow.js"
 import { createMissionModal, createMissionModalId, getMissionModalMission } from "../../utils/components/missionModal.js"
 import { createMissionPreviewString, createMissionPreviewTitle } from "../../utils/createString/createMissionPreviewString.js"
 import { errorEmbed } from "../../utils/errorEmbeds.js"
@@ -11,6 +11,7 @@ import builders from "./builders.js"
 
 const {
     commandId,
+    invalidScoreEmbed,
     replyEmbedPrototype,
     successEmbedPrototype,
     cancelEmbedPrototype,
@@ -62,7 +63,7 @@ export const doReply = async (interaction: ChatInputCommandInteraction, target: 
 
     const mission = getMissionModalMission(modalInteraction, target)
     if (mission === undefined) {
-        await modalInteraction.reply("점수가 숫자가 아닙니다!")
+        await modalInteraction.reply({ embeds: [invalidScoreEmbed], ephemeral: true})
         return
     }
 

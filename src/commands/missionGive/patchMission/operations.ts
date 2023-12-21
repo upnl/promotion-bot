@@ -1,17 +1,18 @@
-﻿import { ButtonInteraction, ChatInputCommandInteraction, ComponentType, EmbedBuilder, InteractionResponse, Message, ModalSubmitInteraction, User } from "discord.js"
+﻿import { ButtonInteraction, ChatInputCommandInteraction, EmbedBuilder, ModalSubmitInteraction, User } from "discord.js"
 import { getMission, patchMission } from "../../../db/actions/missionActions.js"
-import { Mission, MissionUpdateData } from "../../../interfaces/models/Mission.js"
+import { Mission } from "../../../interfaces/models/Mission.js"
 import { checkAssociate } from "../../utils/checks/checkAssociate.js"
+import { addConfirmCollector, createConfirmActionRow } from "../../utils/components/confirmActionRow.js"
+import { createMissionModal, createMissionModalId, getMissionModalMission } from "../../utils/components/missionModal.js"
 import { createMissionEditPreviewString, createMissionPreviewTitle } from "../../utils/createString/createMissionPreviewString.js"
 import { errorEmbed } from "../../utils/errorEmbeds.js"
 import { getQuarterDataFooter } from "../../utils/quarterData/getQuarterData.js"
 import builders from "./builders.js"
-import { createMissionModal, createMissionModalId, getMissionModalMission } from "../../utils/components/missionModal.js"
-import { addConfirmCollector, createConfirmActionRow } from "../../utils/components/confirmActionRow.js"
 
 const {
     commandId,
     missionNotFoundEmbed,
+    invalidScoreEmbed,
     noChangeEmbed,
     replyEmbedPrototype,
     successEmbedPrototype,
@@ -45,11 +46,7 @@ const onConfirm = (
             await buttonInteraction.editReply({ embeds: [errorEmbed] })
     }
 
-const onCancel = (
-    interaction: ModalSubmitInteraction,
-    target: User, category: string, index: number,
-    missionNew: Mission, missionLast: Mission
-) =>
+const onCancel = (interaction: ModalSubmitInteraction, target: User, missionNew: Mission, missionLast: Mission) =>
     async (buttonInteraction: ButtonInteraction) => {
         await buttonInteraction.deferUpdate()
 
@@ -66,11 +63,11 @@ export const doReply = async (interaction: ChatInputCommandInteraction, target: 
     const missionLast = await getMission(interaction.user.id, target.id, category, index)
 
     if (missionLast === null) {
-        await interaction.reply({ embeds: [missionNotFoundEmbed] })
+        await interaction.reply({ embeds: [missionNotFoundEmbed], ephemeral: true })
         return
     }
     if (missionLast === undefined) {
-        await interaction.reply({ embeds: [errorEmbed] })
+        await interaction.reply({ embeds: [errorEmbed], ephemeral: true })
         return
     }
 
@@ -88,11 +85,11 @@ export const doReply = async (interaction: ChatInputCommandInteraction, target: 
 
     const missionNew = getMissionModalMission(modalInteraction, target, missionLast.completed)
     if (missionNew === undefined) {
-        await modalInteraction.reply("점수가 숫자가 아닙니다!")
+        await modalInteraction.reply({ embeds: [invalidScoreEmbed], ephemeral: true })
         return
     }
     else if (missionNew.content === missionLast.content && missionNew.note === missionLast.note && missionNew.score === missionLast.score) {
-        await modalInteraction.reply({ embeds: [noChangeEmbed] })
+        await modalInteraction.reply({ embeds: [noChangeEmbed], ephemeral: true })
         return
     }
 
@@ -111,6 +108,6 @@ export const doReply = async (interaction: ChatInputCommandInteraction, target: 
         await addConfirmCollector(
             commandId, modalInteraction, reply,
             onConfirm(modalInteraction, target, category, index, missionNew, missionLast),
-            onCancel(modalInteraction, target, category, index, missionNew, missionLast)
+            onCancel(modalInteraction, target, missionNew, missionLast)
         )
 }
