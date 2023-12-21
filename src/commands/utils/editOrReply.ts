@@ -1,8 +1,8 @@
 import { ChatInputCommandInteraction, InteractionReplyOptions } from "discord.js";
 
-export const editOrReply = async (interaction: ChatInputCommandInteraction, option: InteractionReplyOptions) => {
+export const editOrReply = async (interaction: ChatInputCommandInteraction, option: InteractionReplyOptions, ephemeral?: boolean) => {
     if (interaction.replied)
-        await interaction.editReply(option)
+        return await interaction.editReply(option)
     else
-        await interaction.reply(option)
+        return await interaction.reply({ ...option, ephemeral, fetchReply: ephemeral })
 }

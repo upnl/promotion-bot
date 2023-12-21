@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, CacheType, Collection, ComponentType, InteractionResponse, Message, MessageActionRowComponentBuilder, ModalSubmitInteraction, User } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, CacheType, Collection, ComponentType, InteractionResponse, Message, MessageActionRowComponentBuilder, RepliableInteraction, User } from "discord.js";
 import { timeoutEmbed } from "../errorEmbeds.js";
 
 const createConfirmButtonId = (commandId: string, user: User) =>
@@ -29,14 +29,14 @@ export const confirmCollect = (
             await onCancel(buttonInteraction)
     }
 
-export const confirmTimeout = (modalInteraction: ModalSubmitInteraction) =>
+export const confirmTimeout = (modalInteraction: RepliableInteraction) =>
     async (collected: Collection<string, ButtonInteraction<CacheType>>) => {
         if (collected.size === 0)
             modalInteraction.editReply({ embeds: [timeoutEmbed], components: [] })
     }
 
 export const addConfirmCollector = (
-    commandId: string, modalInteraction: ModalSubmitInteraction, reply: Message<boolean> | InteractionResponse<boolean>,
+    commandId: string, modalInteraction: RepliableInteraction, reply: Message<boolean> | InteractionResponse<boolean>,
     onConfirm: (buttonInteraction: ButtonInteraction) => Promise<void>,
     onCancel: (buttonInteraction: ButtonInteraction) => Promise<void>
 ) => {

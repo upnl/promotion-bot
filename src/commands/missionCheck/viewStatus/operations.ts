@@ -4,9 +4,9 @@ import { createProgressString } from "../../utils/createString/createMissionStri
 import { errorEmbed } from "../../utils/errorEmbeds.js"
 import { getQuarterDataFooter } from "../../utils/quarterData/getQuarterData.js"
 
-const doReply = async (interaction: ChatInputCommandInteraction, isEditing: boolean = false) => {
+export const doReply = async (interaction: ChatInputCommandInteraction, isEditing: boolean = false) => {
     if (!isEditing)
-        await interaction.deferReply({ephemeral: true})
+        await interaction.deferReply({ ephemeral: true })
 
     const progresses = await getMissionProgressAll(interaction.client, interaction.user.id)
     if (progresses === undefined) {
@@ -14,17 +14,14 @@ const doReply = async (interaction: ChatInputCommandInteraction, isEditing: bool
         return
     }
 
-    const replyEmbed = new EmbedBuilder()
-        .setTitle(`${interaction.user.displayName}의 승격조건 : 현황`)
-        .addFields(progresses.map(progress => ({
-            name: (progress.currentScore > progress.goalScore ? ":white_check_mark:" : ":white_square_button:") + " " + progress.giverName,
-            value: `달성 현황: ${createProgressString(progress.currentScore, progress.goalScore)}`,
-            inline: false
-        })))
-
-    await interaction.editReply({ embeds: [replyEmbed.setFooter(await getQuarterDataFooter())] })
-}
-
-export default {
-    doReply
+    await interaction.editReply({
+        embeds: [new EmbedBuilder()
+            .setTitle(`${interaction.user.displayName}의 승격조건 : 현황`)
+            .addFields(progresses.map(progress => ({
+                name: (progress.currentScore > progress.goalScore ? ":white_check_mark:" : ":white_square_button:") + " " + progress.giverName,
+                value: `달성 현황: ${createProgressString(progress.currentScore, progress.goalScore)}`,
+                inline: false
+            })))
+            .setFooter(await getQuarterDataFooter())]
+    })
 }

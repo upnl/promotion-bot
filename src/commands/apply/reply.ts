@@ -1,8 +1,6 @@
 ﻿import assert from "assert";
 import { InteractionOperation } from "../../interfaces/commands/InteractionOperation.js";
-import operations from "./operations.js";
-
-const { doReply } = operations
+import { doReply } from "./operations.js";
 
 const reply: InteractionOperation = async interaction => {
     assert(interaction.isChatInputCommand())

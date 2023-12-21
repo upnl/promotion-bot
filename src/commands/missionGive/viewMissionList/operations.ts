@@ -14,7 +14,7 @@ const {
     actionRow
 } = builders
 
-const readOptions = (interaction: ChatInputCommandInteraction) => ({
+export const readOptions = (interaction: ChatInputCommandInteraction) => ({
     target: interaction.options.getUser("준회원")
 })
 
@@ -27,10 +27,7 @@ const doMenu = async (interaction: ChatInputCommandInteraction, menuInteraction:
     }
 }
 
-const addCollector = (
-    interaction: ChatInputCommandInteraction, reply: Message<boolean> | InteractionResponse<boolean>,
-    target: User | null
-) => {
+const addCollector = (interaction: ChatInputCommandInteraction, reply: Message<boolean> | InteractionResponse<boolean>) => {
     const collector = reply.createMessageComponentCollector({
         max: 10,
         filter: i => i.user === interaction.user,
@@ -39,14 +36,14 @@ const addCollector = (
     collector.on("collect", buttonInteraction => doMenu(interaction, buttonInteraction))
 }
 
-const doReply = async (interaction: ChatInputCommandInteraction, target: User | null, isEditing: boolean = false) => {
+export const doReply = async (interaction: ChatInputCommandInteraction, target: User | null, isEditing: boolean = false) => {
     if (!isEditing)
-        await interaction.deferReply({ephemeral: true})
+        await interaction.deferReply({ ephemeral: true })
 
     if (target === null) {
         const reply = await interaction.editReply({ embeds: [noAssociateEmbed.setFooter(await getQuarterDataFooter())], components: [actionRow] })
         if (!isEditing)
-            addCollector(interaction, reply, target)
+            addCollector(interaction, reply)
         return
     }
 
@@ -68,7 +65,7 @@ const doReply = async (interaction: ChatInputCommandInteraction, target: User | 
     else {
         if (!await checkAssociate(interaction, target.id, true, [actionRow])) {
             if (!isEditing)
-                addCollector(interaction, await interaction.fetchReply(), target)
+                addCollector(interaction, await interaction.fetchReply())
             return
         }
 
@@ -90,10 +87,5 @@ const doReply = async (interaction: ChatInputCommandInteraction, target: User | 
     const reply = await interaction.editReply({ embeds: [replyEmbed.setFooter(await getQuarterDataFooter())], components: [actionRow] })
 
     if (!isEditing)
-        addCollector(interaction, reply, target)
-}
-
-export default {
-    readOptions,
-    doReply
+        addCollector(interaction, reply)
 }

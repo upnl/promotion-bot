@@ -5,11 +5,11 @@ import { checkAssociate } from "../../utils/checks/checkAssociate.js"
 import { createMissionMapPrintString, createProgressPrintString } from "../../utils/createString/createMissionPrintString.js"
 import { errorEmbed } from "../../utils/errorEmbeds.js"
 
-const readOptions = (interaction: ChatInputCommandInteraction) => ({
+export const readOptions = (interaction: ChatInputCommandInteraction) => ({
     target: interaction.options.getUser("준회원", true)
 })
 
-const doReply = async (interaction: ChatInputCommandInteraction, target: User, isEditing: boolean = false) => {
+export const doReply = async (interaction: ChatInputCommandInteraction, target: User, isEditing: boolean = false) => {
     if (!isEditing)
         await interaction.deferReply({ephemeral: true})
 
@@ -32,9 +32,4 @@ const doReply = async (interaction: ChatInputCommandInteraction, target: User, i
         "```"
 
     const reply = await interaction.editReply(replyString)
-}
-
-export default {
-    readOptions,
-    doReply
 }
