@@ -1,6 +1,6 @@
 ﻿import { ChatInputCommandInteraction, EmbedBuilder } from "discord.js"
 import { getMissionProgressAll } from "../../../db/actions/missionProgressActions.js"
-import { createProgressString } from "../../utils/createString/createMissionString.js"
+import { createProgressString } from "../../utils/createString/createProgresString.js"
 import { errorEmbed } from "../../utils/errorEmbeds.js"
 import { getQuarterDataFooter } from "../../utils/quarterData/getQuarterData.js"
 

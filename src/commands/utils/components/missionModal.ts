@@ -22,7 +22,7 @@ export const createMissionModal = (
     const missionCategoryInput = new TextInputBuilder()
         .setCustomId(missionCategoryInputId)
         .setLabel("카테고리")
-        .setMaxLength(100)
+        .setMaxLength(30)
         .setRequired(true)
         .setStyle(TextInputStyle.Short)
         .setPlaceholder("카테고리를 입력하세요")
@@ -33,7 +33,7 @@ export const createMissionModal = (
         .setLabel("내용")
         .setMaxLength(100)
         .setRequired(true)
-        .setStyle(TextInputStyle.Short)
+        .setStyle(TextInputStyle.Paragraph)
         .setPlaceholder("승격조건 내용을 입력하세요")
         .setValue(missionContentValue)
 

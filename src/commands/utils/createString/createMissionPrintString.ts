@@ -1,9 +1,10 @@
 ﻿import { Mission } from "../../../interfaces/models/Mission.js"
 import { isDefaultCategory } from "./createMissionString.js"
+import { createNoteString } from "./createNoteString.js"
 
 const createMissionPrintString = (mission: Mission, targetId: string) =>
     `- ${mission.content} \\[${mission.score}점\\]` + (mission.completed.includes(targetId) ? " (완료)" : "") +
-    (mission.note !== "" ? `\n  - ${mission.note}` : "")
+    createNoteString(mission.note)
 
 export const createMissionMapPrintString = (missionMap: Map<string, Mission[]>, targetId: string) => missionMap.size > 0 ?
     Array.from(missionMap)
