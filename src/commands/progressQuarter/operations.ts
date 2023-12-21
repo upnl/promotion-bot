@@ -34,7 +34,7 @@ const doConfirm = async (
     interaction: ChatInputCommandInteraction, buttonInteraction: ButtonInteraction,
     quarterNew: QuarterData, regularRole: Role
 ) => {
-    await buttonInteraction.deferReply({ephemeral: true})
+    await buttonInteraction.deferReply()
 
     try {
         for (const [regularId, _] of regularRole.members) {
@@ -91,7 +91,7 @@ const doReply = async (
     year: number | null, quarter: number | null,
     isEditing: boolean = false
 ) => {
-    await interaction.deferReply({ephemeral: true})
+    await interaction.deferReply()
 
     assert(interaction.guild !== null)
 
