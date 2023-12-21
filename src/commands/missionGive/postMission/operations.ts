@@ -65,7 +65,7 @@ export const doReply = async (interaction: ChatInputCommandInteraction, target: 
         await modalInteraction.reply("점수가 숫자가 아닙니다!")
         return
     }
-    
+
     const reply = await modalInteraction.reply({
         embeds: [
             EmbedBuilder.from(replyEmbedPrototype)
@@ -77,9 +77,10 @@ export const doReply = async (interaction: ChatInputCommandInteraction, target: 
         fetchReply: true
     });
 
-    await addConfirmCollector(
-        commandId, modalInteraction, reply,
-        onConfirm(modalInteraction, target, mission),
-        onCancel(modalInteraction, target, mission)
-    )
+    if (!isEditing)
+        await addConfirmCollector(
+            commandId, modalInteraction, reply,
+            onConfirm(modalInteraction, target, mission),
+            onCancel(modalInteraction, target, mission)
+        )
 }
