@@ -3,6 +3,8 @@ import { errorColor, forbiddenColor } from "./colors.js";
 
 export const errorEmbed = new EmbedBuilder().setTitle("DB 접속 오류").setColor(errorColor)
 
+export const timeoutEmbed = new EmbedBuilder().setTitle("시간 내에 응답하지 않았습니다").setColor(errorColor)
+
 export const testEmbed = new EmbedBuilder().setTitle("테스트 중입니다").setColor(forbiddenColor)
 
 export const notInitializedEmbed = new EmbedBuilder().setTitle("아직 초기 설정이 완료되지 않았습니다").setColor(forbiddenColor)

@@ -4,6 +4,7 @@ import { getAssociate } from "../../../db/actions/memberActions.js";
 import { ReplyComponents } from "../../../interfaces/ReplyComponents.js";
 import { selectNotAssociateEmbed, selectNotAssociateOrSelfEmbed, selectUnknownAssociateEmbed } from "../errorEmbeds.js";
 import { getRoleIds } from "../roleId/getRoleIds.js";
+import { editOrReply } from "../editOrReply.js";
 
 export const checkAssociate = async (
     interaction: ChatInputCommandInteraction,
@@ -22,11 +23,11 @@ export const checkAssociate = async (
     if (allowSelf && interaction.user.id === associateId)
         return true
     if (!associateMember.roles.cache.has(roleIds.associateRole)) {
-        await interaction.editReply({ embeds: [allowSelf ? selectNotAssociateOrSelfEmbed : selectNotAssociateEmbed], components })
+        await editOrReply(interaction, { embeds: [allowSelf ? selectNotAssociateOrSelfEmbed : selectNotAssociateEmbed], components })
         return false
     }
     else if (await getAssociate(associateId) === undefined) {
-        await interaction.editReply({ embeds: [selectUnknownAssociateEmbed], components })
+        await editOrReply(interaction, { embeds: [selectUnknownAssociateEmbed], components })
         return false
     }
 

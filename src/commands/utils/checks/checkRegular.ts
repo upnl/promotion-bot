@@ -4,6 +4,7 @@ import { getRegular } from "../../../db/actions/memberActions.js";
 import { ReplyComponents } from "../../../interfaces/ReplyComponents.js";
 import { selectNotRegularEmbed, selectUnknownRegularEmbed } from "../errorEmbeds.js";
 import { getRoleIds } from "../roleId/getRoleIds.js";
+import { editOrReply } from "../editOrReply.js";
 
 export const checkRegular = async (interaction: ChatInputCommandInteraction, regularId: string, components?: ReplyComponents[]): Promise<boolean> => {
     assert(interaction.guild !== null)
@@ -15,11 +16,11 @@ export const checkRegular = async (interaction: ChatInputCommandInteraction, reg
     assert(regularMember !== undefined)
 
     if (!regularMember.roles.cache.has(roleIds.regularRole)) {
-        await interaction.editReply({ embeds: [selectNotRegularEmbed], components })
+        await editOrReply(interaction, { embeds: [selectNotRegularEmbed], components })
         return false
     }
     else if (await getRegular(regularId) === undefined) {
-        await interaction.editReply({ embeds: [selectUnknownRegularEmbed], components })
+        await editOrReply(interaction, { embeds: [selectUnknownRegularEmbed], components })
         return false
     }
 
