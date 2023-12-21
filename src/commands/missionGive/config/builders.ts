@@ -1,4 +1,4 @@
-﻿import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Colors, EmbedBuilder, MessageActionRowComponentBuilder } from "discord.js"
+﻿import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, MessageActionRowComponentBuilder } from "discord.js"
 import { cancelColor, normalColor, successColor } from "../../utils/colors.js"
 
 const replyEmbedPrototype = new EmbedBuilder().setTitle("다음 수정사항을 적용합니까?").setColor(normalColor)

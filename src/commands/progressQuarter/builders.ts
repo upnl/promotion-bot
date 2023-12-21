@@ -11,7 +11,7 @@ const canceledEmbedPrototype = new EmbedBuilder().setTitle("새 분기 시작을
 
 const confirmButtonId = "progress-quarter-confirm"
 const confirmButton = new ButtonBuilder().setCustomId(confirmButtonId).setLabel("Confirm").setStyle(ButtonStyle.Success)
-const cancelButtonId = "progress-quarter-cancel"
+const cancelButtonId = "proOgress-quarter-cancel"
 const cancelButton = new ButtonBuilder().setCustomId(cancelButtonId).setLabel("Cancel").setStyle(ButtonStyle.Danger)
 const actionRow = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(confirmButton, cancelButton)
 

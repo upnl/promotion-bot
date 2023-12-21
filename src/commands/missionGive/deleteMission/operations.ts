@@ -1,13 +1,11 @@
-﻿import builders from "./builders.js"
-import { ButtonInteraction, ChatInputCommandInteraction, ComponentType, EmbedBuilder, InteractionResponse, Message, User } from "discord.js"
-import { getAssociate, getRegular } from "../../../db/actions/memberActions.js"
+﻿import { ButtonInteraction, ChatInputCommandInteraction, ComponentType, EmbedBuilder, InteractionResponse, Message, User } from "discord.js"
 import { deleteMission, getMission } from "../../../db/actions/missionActions.js"
-import { errorEmbed } from "../../utils/errorEmbeds.js"
 import { Mission } from "../../../interfaces/models/Mission.js"
-import { createMissionPreviewString, createMissionPreviewTitle } from "../../utils/createString/createMissionPreviewString.js"
-import { checkRegular } from "../../utils/checks/checkRegular.js"
 import { checkAssociate } from "../../utils/checks/checkAssociate.js"
+import { createMissionPreviewString, createMissionPreviewTitle } from "../../utils/createString/createMissionPreviewString.js"
+import { errorEmbed } from "../../utils/errorEmbeds.js"
 import { getQuarterDataFooter } from "../../utils/quarterData/getQuarterData.js"
+import builders from "./builders.js"
 
 const {
     missionNotFoundEmbed,

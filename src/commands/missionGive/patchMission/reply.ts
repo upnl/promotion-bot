@@ -1,7 +1,7 @@
-﻿import operations from "./operations.js"
+﻿import assert from "assert"
 import { InteractionOperation } from "../../../interfaces/commands/InteractionOperation.js"
-import assert from "assert"
 import { MissionUpdateData } from "../../../interfaces/models/Mission.js"
+import operations from "./operations.js"
 
 const { readOptions, doReply } = operations
 

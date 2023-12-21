@@ -1,18 +1,7 @@
 ﻿import { ButtonInteraction, ChatInputCommandInteraction, ComponentType, EmbedBuilder, InteractionResponse, Message, Role } from "discord.js"
-import builders from "./builders.js"
 import { errorEmbed } from "../utils/errorEmbeds.js"
-import { getQuarterData, getQuarterDataFooter, getQuarterDataString } from "../utils/quarterData/getQuarterData.js"
-import { QuarterData } from "../../interfaces/models/QuarterData.js"
-import { nextQuarter } from "../utils/quarterData/nextQuarter.js"
-import { createQuarterDataString } from "../utils/createString/createQuarterDataString.js"
-import { makeBold } from "../utils/createString/markdown.js"
-import assert from "assert"
-import { setQuarterData } from "../utils/quarterData/setQuarterData.js"
 import { setRoleIds } from "../utils/roleId/setRoleIds.js"
-import { RoleIds } from "../../interfaces/models/RoleIds.js"
-import { firebaseDb } from "../../db/firebase.js"
-import { QUARTER, REGULAR } from "../../db/collectionNames.js"
-import { regularConverter } from "../../db/converters/regularConverter.js"
+import builders from "./builders.js"
 
 const {
     initializeEmbedPrototype,

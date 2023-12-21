@@ -7,7 +7,6 @@ const registerEvent = <K extends keyof ClientEvents>(client: Client, eventContai
     return client.on(eventContainer.event, eventContainer.callback)
 }
 
-
 export const registerEvents = (client: Client) => {
     registerEvent(client, clientReadyEvent)
     registerEvent(client, interactionCreateEvent)

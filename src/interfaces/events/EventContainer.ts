@@ -1,4 +1,4 @@
-import { Awaitable, Client, ClientEvents, Events } from "discord.js";
+import { Awaitable, ClientEvents } from "discord.js";
 
 export interface EventContainer<K extends keyof ClientEvents> {
     event: K;

@@ -1,6 +1,6 @@
 ﻿import { SlashCommandSubcommandBuilder } from "discord.js";
-import reply from "./reply.js";
 import { SlashCommandSubcommandContainer } from "../../../interfaces/commands/CommandContainer.js";
+import reply from "./reply.js";
 
 const name = "목록"
 const description = "승격조건 목록을 확인합니다"

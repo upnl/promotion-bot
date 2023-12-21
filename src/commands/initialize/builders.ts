@@ -1,4 +1,4 @@
-﻿import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Colors, EmbedBuilder, MessageActionRowComponentBuilder } from "discord.js"
+﻿import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, MessageActionRowComponentBuilder } from "discord.js"
 import { cancelColor, normalColor, successColor } from "../utils/colors.js"
 
 const initializeEmbedPrototype = new EmbedBuilder().setTitle("입력 사항을 확인해 주세요").setColor(normalColor)

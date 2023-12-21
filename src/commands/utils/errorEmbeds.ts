@@ -1,4 +1,4 @@
-﻿import { Colors, EmbedBuilder } from "discord.js";
+﻿import { EmbedBuilder } from "discord.js";
 import { errorColor, forbiddenColor } from "./colors.js";
 
 export const errorEmbed = new EmbedBuilder().setTitle("DB 접속 오류").setColor(errorColor)

@@ -1,9 +1,9 @@
-import { ChatInputCommandInteraction, JSONEncodable } from "discord.js";
-import { getRoleIds } from "../roleId/getRoleIds.js";
 import assert from "assert";
+import { ChatInputCommandInteraction } from "discord.js";
 import { getAssociate } from "../../../db/actions/memberActions.js";
 import { ReplyComponents } from "../../../interfaces/ReplyComponents.js";
 import { selectNotAssociateEmbed, selectNotAssociateOrSelfEmbed, selectUnknownAssociateEmbed } from "../errorEmbeds.js";
+import { getRoleIds } from "../roleId/getRoleIds.js";
 
 export const checkAssociate = async (
     interaction: ChatInputCommandInteraction,

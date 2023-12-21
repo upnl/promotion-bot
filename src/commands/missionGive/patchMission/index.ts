@@ -1,6 +1,6 @@
 ﻿import { SlashCommandSubcommandBuilder } from "discord.js";
-import reply from "./reply.js";
 import { SlashCommandSubcommandContainer } from "../../../interfaces/commands/CommandContainer.js";
+import reply from "./reply.js";
 
 const name = "수정"
 const description = "승격조건의 내용 및 점수를 수정합니다"

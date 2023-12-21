@@ -1,9 +1,9 @@
-import { ChatInputCommandInteraction } from "discord.js";
-import { getRoleIds } from "../roleId/getRoleIds.js";
 import assert from "assert";
+import { ChatInputCommandInteraction } from "discord.js";
 import { getRegular } from "../../../db/actions/memberActions.js";
 import { ReplyComponents } from "../../../interfaces/ReplyComponents.js";
 import { selectNotRegularEmbed, selectUnknownRegularEmbed } from "../errorEmbeds.js";
+import { getRoleIds } from "../roleId/getRoleIds.js";
 
 export const checkRegular = async (interaction: ChatInputCommandInteraction, regularId: string, components?: ReplyComponents[]): Promise<boolean> => {
     assert(interaction.guild !== null)

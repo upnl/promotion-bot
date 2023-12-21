@@ -1,4 +1,4 @@
-﻿import { ActionRowBuilder, Colors, EmbedBuilder, MessageActionRowComponentBuilder, UserSelectMenuBuilder } from "discord.js"
+﻿import { ActionRowBuilder, EmbedBuilder, MessageActionRowComponentBuilder, UserSelectMenuBuilder } from "discord.js"
 import { normalColor } from "../../utils/colors.js"
 
 const noRegularEmbed = new EmbedBuilder().setTitle("정회원을 입력하세요").setColor(normalColor)

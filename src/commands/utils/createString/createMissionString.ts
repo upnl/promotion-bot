@@ -1,6 +1,4 @@
-﻿import { User } from "discord.js";
-import { Mission } from "../../../interfaces/models/Mission.js";
-import { makeItalic } from "./markdown.js";
+﻿import { Mission } from "../../../interfaces/models/Mission.js";
 
 export const isDefaultCategory = (category: string) => (category === "공통 조건" || category === "개인 조건")
 

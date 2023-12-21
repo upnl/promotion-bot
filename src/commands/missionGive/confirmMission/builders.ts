@@ -1,4 +1,4 @@
-﻿import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Colors, EmbedBuilder, MessageActionRowComponentBuilder } from "discord.js"
+﻿import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, MessageActionRowComponentBuilder } from "discord.js"
 import { cancelColor, errorColor, successColor } from "../../utils/colors.js"
 
 const missionNotFoundEmbed = new EmbedBuilder().setTitle("승격조건을 찾을 수 없습니다").setColor(errorColor)

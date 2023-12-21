@@ -1,6 +1,5 @@
-﻿import { readFileSync } from "fs";
+﻿import { readFile } from "fs/promises";
 import { QuarterData } from "../../../interfaces/models/QuarterData.js";
-import { readFile } from "fs/promises";
 
 export const getQuarterData = async (): Promise<QuarterData> => {
     const jsonRaw = await readFile("quarterData.json", "utf8")
