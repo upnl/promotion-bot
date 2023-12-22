@@ -18,7 +18,7 @@ export const doReply = async (interaction: ChatInputCommandInteraction, isEditin
         embeds: [new EmbedBuilder()
             .setTitle(`${interaction.user.displayName}의 승격조건 : 현황`)
             .addFields(progresses.map(progress => ({
-                name: (progress.currentScore > progress.goalScore ? ":white_check_mark:" : ":white_square_button:") + " " + progress.giverName,
+                name: (progress.currentScore >= progress.goalScore ? ":white_check_mark:" : ":white_square_button:") + " " + progress.giverName,
                 value: `달성 현황: ${createProgressString(progress.currentScore, progress.goalScore)}`,
                 inline: false
             })))
