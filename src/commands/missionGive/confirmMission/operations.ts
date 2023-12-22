@@ -77,7 +77,7 @@ export const doReply = async (
     if (!isEditing)
         await interaction.deferReply({ ephemeral: true })
 
-    if (!await checkAssociate(interaction, target.id, true))
+    if (!await checkAssociate(interaction, target.id, false))
         return
 
     const getMissionResult = await getMission(interaction.user.id, isUniversal ? interaction.user.id : target.id, category, index)
