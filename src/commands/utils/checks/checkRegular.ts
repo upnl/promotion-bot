@@ -16,11 +16,11 @@ export const checkRegular = async (interaction: ChatInputCommandInteraction, reg
     assert(regularMember !== undefined)
 
     if (!regularMember.roles.cache.has(roleIds.regularRole)) {
-        await editOrReply(interaction, { embeds: [selectNotRegularEmbed], components })
+        await editOrReply(interaction, { embeds: [selectNotRegularEmbed], components, ephemeral: true })
         return false
     }
     else if (await getRegular(regularId) === undefined) {
-        await editOrReply(interaction, { embeds: [selectUnknownRegularEmbed], components })
+        await editOrReply(interaction, { embeds: [selectUnknownRegularEmbed], components, ephemeral: true })
         return false
     }
 

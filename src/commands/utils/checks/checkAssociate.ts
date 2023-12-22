@@ -23,11 +23,11 @@ export const checkAssociate = async (
     if (allowSelf && interaction.user.id === associateId)
         return true
     if (!associateMember.roles.cache.has(roleIds.associateRole)) {
-        await editOrReply(interaction, { embeds: [allowSelf ? selectNotAssociateOrSelfEmbed : selectNotAssociateEmbed], components })
+        await editOrReply(interaction, { embeds: [allowSelf ? selectNotAssociateOrSelfEmbed : selectNotAssociateEmbed], components, ephemeral: true })
         return false
     }
     else if (await getAssociate(associateId) === undefined) {
-        await editOrReply(interaction, { embeds: [selectUnknownAssociateEmbed], components })
+        await editOrReply(interaction, { embeds: [selectUnknownAssociateEmbed], components, ephemeral: true })
         return false
     }
 
