@@ -21,11 +21,11 @@ export const readOptions = (interaction: ChatInputCommandInteraction) => ({
     target: interaction.options.getUser("대상", true)
 })
 
-const onConfirm = (modalInteraction: ModalSubmitInteraction, target: User, mission: Mission) =>
+const onConfirm = (modalInteraction: ModalSubmitInteraction, target: User, index: number, mission: Mission) =>
     async (buttonInteraction: ButtonInteraction) => {
         await buttonInteraction.deferReply({ ephemeral: true })
 
-        const success = await postMission(mission)
+        const success = await postMission(index, mission)
 
         if (success) {
             const successEmbed = new EmbedBuilder(successEmbedPrototype.toJSON())
@@ -61,12 +61,13 @@ export const doReply = async (interaction: ChatInputCommandInteraction, target: 
     if (modalInteraction === null)
         return
 
-    const mission = getMissionModalMission(modalInteraction, target)
-    if (mission === undefined) {
+    const modalValue = getMissionModalMission(modalInteraction, target)
+    if (modalValue === undefined) {
         await modalInteraction.reply({ embeds: [invalidScoreEmbed], ephemeral: true })
         return
     }
 
+    const { index, mission } = modalValue
     const reply = await modalInteraction.reply({
         embeds: [EmbedBuilder.from(replyEmbedPrototype)
             .addFields({ name: createMissionPreviewTitle(mission, target), value: createMissionPreviewString(mission, target) })
@@ -79,7 +80,7 @@ export const doReply = async (interaction: ChatInputCommandInteraction, target: 
     if (!isEditing)
         await addConfirmCollector(
             commandId, modalInteraction, reply,
-            onConfirm(modalInteraction, target, mission),
+            onConfirm(modalInteraction, target, index, mission),
             onCancel(modalInteraction, target, mission)
         )
 }

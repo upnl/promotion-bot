@@ -56,17 +56,17 @@ export const doReply = async (interaction: ChatInputCommandInteraction, target: 
     if (!await checkAssociate(interaction, target.id, true))
         return
 
-    const mission = await getMission(interaction.user.id, target.id, category, index)
-
-    if (mission === null) {
+    const getMissionResult = await getMission(interaction.user.id, target.id, category, index)
+    if (getMissionResult === null) {
         await interaction.editReply({ embeds: [missionNotFoundEmbed] })
         return
     }
-    if (mission === undefined) {
+    if (getMissionResult === undefined) {
         await interaction.editReply({ embeds: [errorEmbed] })
         return
     }
 
+    const { mission } = getMissionResult
     const reply = await interaction.editReply({
         embeds: [EmbedBuilder.from(replyEmbedPrototype)
             .addFields({ name: createMissionPreviewTitle(mission, target), value: createMissionPreviewString(mission, target) })

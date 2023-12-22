@@ -27,13 +27,13 @@ export const readOptions = (interaction: ChatInputCommandInteraction) => ({
 
 const onConfirm = (
     interaction: ModalSubmitInteraction,
-    target: User, category: string, index: number,
-    missionNew: Mission, missionLast: Mission
+    target: User, category: string, index: number, missionLast: Mission,
+    indexNew: number, missionNew: Mission
 ) =>
     async (buttonInteraction: ButtonInteraction) => {
         await buttonInteraction.deferReply({ ephemeral: true })
 
-        const success = await patchMission(interaction.user.id, target.id, category, index, missionNew)
+        const success = await patchMission(interaction.user.id, target.id, category, index, indexNew, missionNew)
 
         if (success) {
             const successEmbed = new EmbedBuilder(successEmbedPrototype.toJSON())
@@ -46,7 +46,7 @@ const onConfirm = (
             await buttonInteraction.editReply({ embeds: [errorEmbed] })
     }
 
-const onCancel = (interaction: ModalSubmitInteraction, target: User, missionNew: Mission, missionLast: Mission) =>
+const onCancel = (interaction: ModalSubmitInteraction, target: User, missionLast: Mission, missionNew: Mission) =>
     async (buttonInteraction: ButtonInteraction) => {
         await buttonInteraction.deferUpdate()
 
@@ -60,20 +60,21 @@ export const doReply = async (interaction: ChatInputCommandInteraction, target: 
     if (!await checkAssociate(interaction, target.id, true))
         return
 
-    const missionLast = await getMission(interaction.user.id, target.id, category, index)
-
-    if (missionLast === null) {
+    const getMissionResult = await getMission(interaction.user.id, target.id, category, index)
+    if (getMissionResult === null) {
         await interaction.reply({ embeds: [missionNotFoundEmbed], ephemeral: true })
         return
     }
-    if (missionLast === undefined) {
+    if (getMissionResult === undefined) {
         await interaction.reply({ embeds: [errorEmbed], ephemeral: true })
         return
     }
 
+    const { mission: missionLast } = getMissionResult
+
     await interaction.showModal(createMissionModal(
         commandId, interaction.user, target,
-        missionLast.category, missionLast.content, missionLast.score, missionLast.note
+        missionLast.category, index + 1, missionLast.content, missionLast.score, missionLast.note
     ))
 
     const modalInteraction = await interaction.awaitModalSubmit({
@@ -83,12 +84,20 @@ export const doReply = async (interaction: ChatInputCommandInteraction, target: 
     if (modalInteraction === null)
         return
 
-    const missionNew = getMissionModalMission(modalInteraction, target, missionLast.completed)
-    if (missionNew === undefined) {
+    const modalValue = getMissionModalMission(modalInteraction, target, missionLast.completed)
+    if (modalValue === undefined) {
         await modalInteraction.reply({ embeds: [invalidScoreEmbed], ephemeral: true })
         return
     }
-    else if (missionNew.content === missionLast.content && missionNew.note === missionLast.note && missionNew.score === missionLast.score) {
+    
+    const { index: indexNew, mission: missionNew } = modalValue
+    if (
+        missionNew.category === missionLast.category &&
+        missionNew.content === missionLast.content &&
+        missionNew.note === missionLast.note &&
+        missionNew.score === missionLast.score &&
+        index === indexNew
+    ) {
         await modalInteraction.reply({ embeds: [noChangeEmbed], ephemeral: true })
         return
     }
@@ -107,7 +116,7 @@ export const doReply = async (interaction: ChatInputCommandInteraction, target: 
     if (!isEditing)
         await addConfirmCollector(
             commandId, modalInteraction, reply,
-            onConfirm(modalInteraction, target, category, index, missionNew, missionLast),
-            onCancel(modalInteraction, target, missionNew, missionLast)
+            onConfirm(modalInteraction, target, category, index, missionLast, indexNew, missionNew),
+            onCancel(modalInteraction, target, missionLast, missionNew)
         )
 }

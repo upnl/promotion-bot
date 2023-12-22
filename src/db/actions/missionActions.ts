@@ -1,10 +1,21 @@
-﻿import { Mission, MissionMap, MissionUpdateData } from "../../interfaces/models/Mission.js";
-import { firebaseDb } from "../firebase.js";
+﻿import { FieldValue, Transaction } from "firebase-admin/firestore";
+import { getQuarterDataString } from "../../commands/utils/quarterData/getQuarterData.js";
+import { Mission, MissionMap } from "../../interfaces/models/Mission.js";
 import { ASSOCIATE, MISSION, MISSION_PROGRESS, QUARTER, REGULAR } from "../collectionNames.js";
 import { missionConverter, missionMapConverter, missionProgressConverter } from "../converters/missionConverter.js";
-import { FieldValue, Transaction } from "firebase-admin/firestore";
-import { getQuarterDataString } from "../../commands/utils/quarterData/getQuarterData.js";
-import { associateConverter } from "../converters/associateConverter.js";
+import { firebaseDb } from "../firebase.js";
+import { applyArrayOperation, insertItem, removeItem } from "../../utils/arrayModification.js";
+
+const getMissionIdsInCategory = (missionMap: MissionMap | undefined, category: string) => {
+    if (missionMap === undefined)
+        return null
+
+    const missionIdsInCategory = missionMap.data.get(category)
+    if (missionIdsInCategory === undefined)
+        return null
+
+    return missionIdsInCategory
+}
 
 export const getMissionDocRef = async (giverId: string, targetId: string, category: string, index: number, transaction?: FirebaseFirestore.Transaction) => {
     try {
@@ -16,19 +27,19 @@ export const getMissionDocRef = async (giverId: string, targetId: string, catego
         const missionMap = transaction === undefined ?
             await missionMapDocRef.withConverter(missionMapConverter).get().then(snapshot => snapshot.data()) :
             await transaction.get(missionMapDocRef.withConverter(missionMapConverter)).then(snapshot => snapshot.data())
-
         if (missionMap === undefined)
             return null
 
         const missionIdsInCategory = missionMap.data.get(category)
-
         if (missionIdsInCategory === undefined || missionIdsInCategory.length <= index)
             return null
 
-        return firebaseDb
+        const missionDocRef = firebaseDb
             .collection(QUARTER).doc(await getQuarterDataString())
             .collection(MISSION).doc(missionIdsInCategory[index])
             .withConverter(missionConverter)
+
+        return { missionMapDocRef, missionMap, missionIdsInCategory, missionDocRef }
     }
     catch (e) {
         console.error("Error reading document: ", e);
@@ -37,20 +48,24 @@ export const getMissionDocRef = async (giverId: string, targetId: string, catego
     }
 }
 
-export const getMission = async (giverId: string, targetId: string, category: string, index: number) => {
-    const missionDocRef = await getMissionDocRef(giverId, targetId, category, index)
-
-    if (missionDocRef === null || missionDocRef === undefined)
-        return missionDocRef
-
+export const getMission = async (giverId: string, targetId: string, category: string, index: number, transaction?: FirebaseFirestore.Transaction) => {
     try {
-        const mission = await missionDocRef.withConverter(missionConverter)
-            .get().then(snapshot => snapshot.data())
+        const getMissionDocRefResult = await getMissionDocRef(giverId, targetId, category, index, transaction)
+        if (getMissionDocRefResult === undefined || getMissionDocRefResult === null)
+            return getMissionDocRefResult
 
-        return mission
+        const { missionMapDocRef, missionMap, missionIdsInCategory, missionDocRef } = getMissionDocRefResult
+
+        const mission = transaction === undefined ?
+            await missionDocRef.withConverter(missionConverter).get().then(snapshot => snapshot.data()) :
+            await transaction.get(missionDocRef.withConverter(missionConverter)).then(snapshot => snapshot.data())
+        if (mission === undefined)
+            return null
+
+        return { missionMapDocRef, missionMap, missionIdsInCategory, missionDocRef, mission }
     }
     catch (e) {
-        console.error(e)
+        console.error("Error reading document: ", e);
 
         return
     }
@@ -107,8 +122,7 @@ export const getMissionAll = async (giverId: string, targetId: string): Promise<
     }
 }
 
-
-export const postMission = async (mission: Mission): Promise<boolean> => {
+export const postMission = async (index: number, mission: Mission): Promise<boolean> => {
     const giverId = mission.giverId
     const targetId = mission.targetId
 
@@ -122,29 +136,21 @@ export const postMission = async (mission: Mission): Promise<boolean> => {
         .collection(MISSION).doc(targetId)
 
     try {
-        await firebaseDb.runTransaction(async transaction => {
+        const result = await firebaseDb.runTransaction(async transaction => {
             const missionMap = await transaction.get(missionMapDocRef.withConverter(missionMapConverter)).then(snapshot => snapshot.data())
-            let newData: Map<string, string[]>
+            const missionIdsInCategory = getMissionIdsInCategory(missionMap, mission.category)
+            const newMissionIdsInCategory = applyArrayOperation(missionIdsInCategory, [insertItem(index, missionDocRef.id)])
 
             if (missionMap === undefined)
-                newData = new Map<string, string[]>([[mission.category, [missionDocRef.id]]])
-            else {
-                newData = missionMap.data
-                const missionsInCategory = newData.get(mission.category)
-                if (missionsInCategory === undefined)
-                    newData.set(mission.category, [missionDocRef.id])
-                else
-                    missionsInCategory.push(missionDocRef.id)
-            }
+                transaction.set(missionMapDocRef, { data: { [`${mission.category}`]: newMissionIdsInCategory } })
+            else
+                transaction.update(missionMapDocRef, { [`data.${mission.category}`]: newMissionIdsInCategory })
+            transaction.set(missionDocRef, mission)
 
-            await transaction.set(missionMapDocRef.withConverter(missionMapConverter), {
-                data: newData
-            })
-
-            await transaction.set(missionDocRef, mission)
+            return true
         })
 
-        return true;
+        return result;
     } catch (e) {
         console.error("Error adding document: ", e);
 
@@ -165,9 +171,9 @@ export const updateMissionScore = async (mission: Mission, newScore: number, tra
                 .withConverter(missionProgressConverter)
 
             if (transaction !== undefined)
-                await transaction.update(missionProgressDocRef, { currentScore: FieldValue.increment(newScore - mission.score) })
+                transaction.update(missionProgressDocRef, { currentScore: FieldValue.increment(newScore - mission.score) })
             else
-                await missionProgressDocRef.update({ currentScore: FieldValue.increment(newScore - mission.score) })
+                missionProgressDocRef.update({ currentScore: FieldValue.increment(newScore - mission.score) })
         }
 
         return true
@@ -177,21 +183,33 @@ export const updateMissionScore = async (mission: Mission, newScore: number, tra
     }
 }
 
-export const patchMission = async (giverId: string, targetId: string, category: string, index: number, missionUpdateData: MissionUpdateData) => {
+export const patchMission = async (giverId: string, targetId: string, category: string, index: number, indexNew: number, missionNew: Mission) => {
     try {
         const result = await firebaseDb.runTransaction(async transaction => {
-            const missionDocRef = await getMissionDocRef(giverId, targetId, category, index, transaction)
+            const getMissionResult = await getMission(giverId, targetId, category, index, transaction)
+            if (getMissionResult === null || getMissionResult === undefined)
+                return getMissionResult
 
-            if (missionDocRef === null || missionDocRef === undefined)
-                return missionDocRef
+            const { missionMapDocRef, missionMap, missionDocRef, mission, missionIdsInCategory: missionIdsInOldCategory } = getMissionResult
 
-            const mission = await transaction.get(missionDocRef).then(snapshot => snapshot.data())
-            if (mission === undefined)
-                return mission
+            if (mission.category !== missionNew.category) {
+                const missionIdsInNewCategory = getMissionIdsInCategory(missionMap, missionNew.category)
 
-            if (missionUpdateData.score !== undefined)
-                await updateMissionScore(mission, missionUpdateData.score, transaction)
-            missionDocRef.update(missionUpdateData)
+                transaction.update(missionMapDocRef, {
+                    [`data.${missionNew.category}`]: applyArrayOperation(missionIdsInNewCategory, [insertItem(indexNew, missionDocRef.id)]),
+                    [`data.${mission.category}`]: applyArrayOperation(missionIdsInOldCategory, [removeItem(index)])
+                })
+            }
+            else if (indexNew !== index)
+                transaction.update(missionMapDocRef, {
+                    [`data.${mission.category}`]: applyArrayOperation(missionIdsInOldCategory, [
+                        removeItem(index), insertItem(indexNew, missionDocRef.id)
+                    ])
+                })
+
+            if (missionNew.score !== mission.score)
+                await updateMissionScore(mission, missionNew.score, transaction)
+            transaction.update(missionDocRef, missionNew)
 
             return true
         })
@@ -208,34 +226,17 @@ export const patchMission = async (giverId: string, targetId: string, category: 
 export const deleteMission = async (giverId: string, targetId: string, category: string, index: number) => {
     try {
         const result = await firebaseDb.runTransaction(async transaction => {
-            const missionIdsDocRef = firebaseDb
-                .collection(QUARTER).doc(await getQuarterDataString())
-                .collection(REGULAR).doc(giverId)
-                .collection(MISSION).doc(targetId)
-                .withConverter(missionMapConverter)
+            const getMissionResult = await getMission(giverId, targetId, category, index, transaction)
+            if (getMissionResult === null || getMissionResult === undefined)
+                return getMissionResult
 
-            const missionMap = await transaction.get(missionIdsDocRef).then(snapshot => snapshot.data())
-            if (missionMap === undefined)
-                return null
+            const { missionMapDocRef, missionIdsInCategory, missionDocRef, mission } = getMissionResult
 
-            const missionIdsInCategory = missionMap.data.get(category)
-            if (missionIdsInCategory === undefined || missionIdsInCategory.length <= index)
-                return null
+            const newMissionIdsInCategory = applyArrayOperation(missionIdsInCategory, [removeItem(index)])
 
-            const missionDocRef = firebaseDb
-                .collection(QUARTER).doc(await getQuarterDataString())
-                .collection(MISSION).doc(missionIdsInCategory[index])
-                .withConverter(missionConverter)
-
-            const mission = await transaction.get(missionDocRef).then(snapshot => snapshot.data())
-            if (mission === undefined)
-                return mission
-
-            missionIdsInCategory.splice(index, 1)
-            
             await updateMissionScore(mission, 0, transaction)
-            transaction.update(missionIdsDocRef, {
-                [`data.${category}`]: missionIdsInCategory.length > 0 ? missionIdsInCategory : FieldValue.delete()
+            transaction.update(missionMapDocRef, {
+                [`data.${category}`]: newMissionIdsInCategory.length > 0 ? newMissionIdsInCategory : FieldValue.delete()
             })
             transaction.delete(missionDocRef)
 
