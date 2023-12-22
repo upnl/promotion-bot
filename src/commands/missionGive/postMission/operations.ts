@@ -63,16 +63,14 @@ export const doReply = async (interaction: ChatInputCommandInteraction, target: 
 
     const mission = getMissionModalMission(modalInteraction, target)
     if (mission === undefined) {
-        await modalInteraction.reply({ embeds: [invalidScoreEmbed], ephemeral: true})
+        await modalInteraction.reply({ embeds: [invalidScoreEmbed], ephemeral: true })
         return
     }
 
     const reply = await modalInteraction.reply({
-        embeds: [
-            EmbedBuilder.from(replyEmbedPrototype)
-                .addFields({ name: createMissionPreviewTitle(mission, target), value: createMissionPreviewString(mission, target) })
-                .setFooter(await getQuarterDataFooter())
-        ],
+        embeds: [EmbedBuilder.from(replyEmbedPrototype)
+            .addFields({ name: createMissionPreviewTitle(mission, target), value: createMissionPreviewString(mission, target) })
+            .setFooter(await getQuarterDataFooter())],
         components: [createConfirmActionRow(commandId, modalInteraction.user)],
         ephemeral: true,
         fetchReply: true
