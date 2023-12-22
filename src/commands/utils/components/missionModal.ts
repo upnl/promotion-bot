@@ -45,7 +45,7 @@ export const createMissionModal = (
         .setLabel("내용")
         .setMaxLength(100)
         .setRequired(true)
-        .setStyle(TextInputStyle.Paragraph)
+        .setStyle(TextInputStyle.Short)
         .setPlaceholder("승격조건 내용을 입력하세요")
         .setValue(missionContentValue)
 
