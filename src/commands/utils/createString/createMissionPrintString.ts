@@ -17,4 +17,4 @@ export const createMissionMapPrintString = (missionMap: Map<string, Mission[]>, 
 
 export const createProgressPrintString = (currentScore: number, goalScore: number) =>
     `- 목표: ${goalScore}점\n` +
-    `- 현재: ${currentScore}점\n`
+    `- 현재: ${currentScore}점`

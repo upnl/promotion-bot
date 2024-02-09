@@ -17,17 +17,17 @@ export const doReply = async (interaction: ChatInputCommandInteraction, target: 
         return
 
     const progress = await getMissionProgress(interaction.user.id, target.id)
-    const missions = await getMissionAll(interaction.user.id, target.id)
-    if (missions === undefined || progress === undefined) {
+    const missionUniversal = await getMissionAll(interaction.user.id, interaction.user.id)
+    const missionSpecific = await getMissionAll(interaction.user.id, target.id)
+    if (missionUniversal === undefined || missionSpecific === undefined || progress === undefined) {
         await interaction.editReply({ embeds: [errorEmbed] })
         return
     }
-    const [missionUniversal, missionSpecific] = missions
 
     const replyString = "```markdown\n" +
-        `# ${target.displayName}의 승격 조건 : ${interaction.user.displayName}\n` +
-        `## 달성 현황\n${createProgressPrintString(progress.currentScore, progress.goalScore)}\n` +
-        `## 공통 조건\n${createMissionMapPrintString(missionUniversal, target.id)}\n` +
+        `# ${target.displayName}의 승격 조건 : ${interaction.user.displayName}\n\n` +
+        `## 달성 현황\n${createProgressPrintString(progress.currentScore, progress.goalScore)}\n\n` +
+        `## 공통 조건\n${createMissionMapPrintString(missionUniversal, target.id)}\n\n` +
         `## 개인 조건\n${createMissionMapPrintString(missionSpecific, target.id)}` +
         "```"
 

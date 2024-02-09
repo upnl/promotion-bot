@@ -4,7 +4,7 @@ import { getQuarterDataFooter } from "../../utils/quarterData/getQuarterData.js"
 import builders from "./builders.js"
 import { getAllAssociateIds } from "../../../db/actions/memberActions.js"
 import { getMissionProgress } from "../../../db/actions/missionProgressActions.js"
-import { getMissionAll, getMissionCount } from "../../../db/actions/missionActions.js"
+import { getMissionCount } from "../../../db/actions/missionActions.js"
 import assert from "assert"
 
 const {

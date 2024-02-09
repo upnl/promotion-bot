@@ -72,62 +72,58 @@ export const getMission = async (giverId: string, targetId: string, category: st
 }
 
 export const getMissionCount = async (giverId: string, targetId: string) => {
-    const missionMap = await firebaseDb
-        .collection(QUARTER).doc(await getQuarterDataString())
-        .collection(REGULAR).doc(giverId)
-        .collection(MISSION).doc(targetId)
-        .withConverter(missionMapConverter)
-        .get().then(snapshot => snapshot.data())
-
-    if (missionMap === undefined)
-        return 0
-    else
-        return [...missionMap.data.values()].reduce((prev, curr) => prev + curr.length, 0)
-}
-
-export const getMissionAll = async (giverId: string, targetId: string): Promise<[Map<string, Mission[]>, Map<string, Mission[]>] | undefined> => {
     try {
-        const missionMapSpecific = await firebaseDb
+        const missionMap = await firebaseDb
             .collection(QUARTER).doc(await getQuarterDataString())
             .collection(REGULAR).doc(giverId)
             .collection(MISSION).doc(targetId)
             .withConverter(missionMapConverter)
             .get().then(snapshot => snapshot.data())
 
-        const missionMapUniversal = await firebaseDb
+        if (missionMap === undefined)
+            return 0
+        else
+            return [...missionMap.data.values()].reduce((prev, curr) => prev + curr.length, 0)
+    }
+    catch (e) {
+        console.error(e)
+
+        return
+    }
+}
+
+export const getMissionAll = async (giverId: string, targetId: string) => {
+    try {
+        const missionMap = await firebaseDb
             .collection(QUARTER).doc(await getQuarterDataString())
             .collection(REGULAR).doc(giverId)
-            .collection(MISSION).doc(giverId)
+            .collection(MISSION).doc(targetId)
             .withConverter(missionMapConverter)
             .get().then(snapshot => snapshot.data())
 
-        const missionMapToMissions = async (missionMap: MissionMap | undefined) => {
-            const missions = new Map<string, Mission[]>()
+        const missions = new Map<string, Mission[]>()
 
-            if (missionMap === undefined)
-                return missions
-
-            for (const [category, missionIds] of missionMap.data) {
-                const missionsInCategory: Mission[] = []
-                missions.set(category, missionsInCategory)
-
-                for (const missionId of missionIds) {
-                    const mission = await firebaseDb
-                        .collection(QUARTER).doc(await getQuarterDataString())
-                        .collection(MISSION).doc(missionId)
-                        .withConverter(missionConverter)
-                        .get().then(snapshot => snapshot.data())
-
-                    if (mission === undefined)
-                        continue
-                    missionsInCategory.push(mission)
-                }
-            }
-
+        if (missionMap === undefined)
             return missions
+
+        for (const [category, missionIds] of missionMap.data) {
+            const missionsInCategory: Mission[] = []
+            missions.set(category, missionsInCategory)
+
+            for (const missionId of missionIds) {
+                const mission = await firebaseDb
+                    .collection(QUARTER).doc(await getQuarterDataString())
+                    .collection(MISSION).doc(missionId)
+                    .withConverter(missionConverter)
+                    .get().then(snapshot => snapshot.data())
+
+                if (mission === undefined)
+                    continue
+                missionsInCategory.push(mission)
+            }
         }
 
-        return [await missionMapToMissions(missionMapUniversal), await missionMapToMissions(missionMapSpecific)]
+        return missions
     }
     catch (e) {
         console.error(e)

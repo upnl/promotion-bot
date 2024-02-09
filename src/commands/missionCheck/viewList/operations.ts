@@ -56,12 +56,12 @@ export const doReply = async (interaction: ChatInputCommandInteraction, giver: U
     }
 
     const progress = await getMissionProgress(giver.id, interaction.user.id)
-    const missions = await getMissionAll(giver.id, interaction.user.id)
-    if (missions === undefined || progress === undefined) {
+    const missionUniversal = await getMissionAll(giver.id, giver.id)
+    const missionSpecific = await getMissionAll(giver.id, interaction.user.id)
+    if (missionUniversal === undefined || missionSpecific === undefined || progress === undefined) {
         await interaction.editReply({ embeds: [errorEmbed] })
         return
     }
-    const [missionUniversal, missionSpecific] = missions
 
     const reply = await interaction.editReply({ 
         embeds: [EmbedBuilder.from(viewListEmbedPrototype)

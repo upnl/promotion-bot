@@ -50,14 +50,11 @@ export const doReply = async (interaction: ChatInputCommandInteraction, target: 
 
     let replyEmbed: EmbedBuilder;
     if (target.id === interaction.user.id) {
-        const missions = await getMissionAll(interaction.user.id, target.id)
-
-        if (missions === undefined) {
+        const missionUniversal = await getMissionAll(interaction.user.id, interaction.user.id)
+        if (missionUniversal === undefined) {
             await interaction.editReply({ embeds: [errorEmbed] })
-            return;
+            return
         }
-
-        const [missionUniversal, _] = missions
 
         replyEmbed = new EmbedBuilder(viewMissionListEmbedPrototype.toJSON())
             .setTitle(`공통 승격 조건: ${interaction.user.displayName}`)
@@ -71,12 +68,12 @@ export const doReply = async (interaction: ChatInputCommandInteraction, target: 
         }
 
         const progress = await getMissionProgress(interaction.user.id, target.id)
-        const missions = await getMissionAll(interaction.user.id, target.id)
-        if (missions === undefined || progress === undefined) {
+        const missionUniversal = await getMissionAll(interaction.user.id, interaction.user.id)
+        const missionSpecific = await getMissionAll(interaction.user.id, target.id)
+        if (missionUniversal === undefined || missionSpecific === undefined || progress === undefined) {
             await interaction.editReply({ embeds: [errorEmbed] })
             return
         }
-        const [missionUniversal, missionSpecific] = missions
 
         replyEmbed = new EmbedBuilder(viewMissionListEmbedPrototype.toJSON())
             .setTitle(`${target.displayName}의 승격 조건 : ${interaction.user.displayName}`)
