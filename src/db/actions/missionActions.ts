@@ -71,6 +71,20 @@ export const getMission = async (giverId: string, targetId: string, category: st
     }
 }
 
+export const getMissionCount = async (giverId: string, targetId: string) => {
+    const missionMap = await firebaseDb
+        .collection(QUARTER).doc(await getQuarterDataString())
+        .collection(REGULAR).doc(giverId)
+        .collection(MISSION).doc(targetId)
+        .withConverter(missionMapConverter)
+        .get().then(snapshot => snapshot.data())
+
+    if (missionMap === undefined)
+        return 0
+    else
+        return [...missionMap.data.values()].reduce((prev, curr) => prev + curr.length, 0)
+}
+
 export const getMissionAll = async (giverId: string, targetId: string): Promise<[Map<string, Mission[]>, Map<string, Mission[]>] | undefined> => {
     try {
         const missionMapSpecific = await firebaseDb

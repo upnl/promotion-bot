@@ -7,6 +7,7 @@ import patchMission from "./patchMission/index.js";
 import postMission from "./postMission/index.js";
 import printMission from "./printMission/index.js";
 import viewMissionList from "./viewMissionList/index.js";
+import viewMissionStatus from "./viewMissionStatus/index.js"
 
 const name = "제시"
 const description = "승격조건을 제시합니다"
@@ -14,11 +15,12 @@ const description = "승격조건을 제시합니다"
 const subcommands = [
     config,
     viewMissionList,
+    viewMissionStatus,
     postMission,
     deleteMission,
     patchMission,
     confirmMission,
-    printMission
+    printMission,
 ]
 
 const missionGive: SlashCommandSubcommandsOnlyContainer = {
