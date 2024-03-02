@@ -1,4 +1,5 @@
 ﻿import { SlashCommandSubcommandsOnlyContainer } from "../../interfaces/commands/CommandContainer.js";
+import { CommandType } from "../../interfaces/commands/CommandTypes.js";
 import { MySlashCommandBuilder } from "../MySlashCommandBuilder.js";
 import config from "./config/index.js";
 import confirmMission from "./confirmMission/index.js";
@@ -24,7 +25,7 @@ const subcommands = [
 ]
 
 const missionGive: SlashCommandSubcommandsOnlyContainer = {
-    commandType: "정회원",
+    commandType: CommandType.Regular,
     builder: new MySlashCommandBuilder()
         .setName(name)
         .setDescription(description)

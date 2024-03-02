@@ -1,3 +1,9 @@
-﻿export const commandTypes = ["공통", "서버장", "넬장", "정회원", "준회원"]
+﻿export enum CommandType {
+  Public = "공통",
+  ServerOwner = "서버장",
+  President = "넬장",
+  Regular = "정회원",
+  Associate = "준회원",
+}
 
-export type CommandType = typeof commandTypes[number]
+export const commandTypes = Object.values(CommandType);

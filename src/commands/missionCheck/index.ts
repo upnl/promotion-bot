@@ -2,6 +2,7 @@
 import { MySlashCommandBuilder } from "../MySlashCommandBuilder.js";
 import viewStatus from "./viewStatus/index.js";
 import viewList from "./viewList/index.js";
+import { CommandType } from "../../interfaces/commands/CommandTypes.js";
 
 const name = "확인"
 const description = "받은 승격조건을 확인합니다"
@@ -12,7 +13,7 @@ const subcommands = [
 ]
 
 const missionCheck: SlashCommandSubcommandsOnlyContainer = {
-    commandType: "준회원",
+    commandType: CommandType.Associate,
     builder: new MySlashCommandBuilder()
         .setName(name)
         .setDescription(description)

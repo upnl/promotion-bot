@@ -1,4 +1,5 @@
 ﻿import { SlashCommandContainer } from "../../interfaces/commands/CommandContainer.js";
+import { CommandType } from "../../interfaces/commands/CommandTypes.js";
 import { MySlashCommandBuilder } from "../MySlashCommandBuilder.js";
 import reply from "./reply.js";
 
@@ -6,7 +7,7 @@ const name = "분기시작"
 const description = "새 분기를 시작합니다"
 
 const progressQuarter: SlashCommandContainer = {
-    commandType: "넬장",
+    commandType: CommandType.President,
     builder: new MySlashCommandBuilder()
         .setName(name)
         .setDescription(description)
