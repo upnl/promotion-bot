@@ -19,7 +19,7 @@ export const notAssociateEmbed = new EmbedBuilder().setTitle("준회원이 아�
 export const unknownAssociateEmbed = new EmbedBuilder().setTitle("먼저 승격신청을 해 주세요 ").setColor(forbiddenColor)
 
 export const selectNotAssociateEmbed = new EmbedBuilder().setTitle("준회원을 선택해 주세요").setColor(errorColor)
-export const selectNotAssociateOrSelfEmbed = new EmbedBuilder().setTitle("준회원 또는 자기 자신을 선택해 주세요").setColor(errorColor)
+export const selectNotAssociateOrSelfEmbed = new EmbedBuilder().setTitle("준회원 또는 정회원 본인을 선택해 주세요").setColor(errorColor)
 export const selectUnknownAssociateEmbed = new EmbedBuilder().setTitle("해당 준회원은 아직 승격신청을 하지 않았습니다").setColor(errorColor)
 
 export const selectNotRegularEmbed = new EmbedBuilder().setTitle("정회원을 선택해 주세요").setColor(errorColor)
