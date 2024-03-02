@@ -8,15 +8,7 @@ const reply: InteractionOperation = async interaction => {
 
     const { chiefRole, regularRole, associateRole } = readOptions(interaction)
 
-    const realChiefRole = await interaction.guild.roles.fetch(chiefRole.id)
-    const realRegularRole = await interaction.guild.roles.fetch(regularRole.id);
-    const realAssociateRole = await interaction.guild.roles.fetch(associateRole.id);
-
-    assert(realChiefRole !== null)
-    assert(realRegularRole !== null)
-    assert(realAssociateRole !== null)
-
-    await doReply(interaction, realChiefRole, realRegularRole, realAssociateRole)
+    await doReply(interaction, chiefRole, regularRole, associateRole)
 }
 
 export default reply
