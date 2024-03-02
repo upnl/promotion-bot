@@ -219,23 +219,20 @@ export const doReply = async (
         );
       return;
     }
-    
+
     let replyEmbed: EmbedBuilder;
-    if (target.id === interaction.user.id) {
-      const missionUniversal = await getMissionAll(
-        interaction.user.id,
-        interaction.user.id
-      );
+    if (target.id === giver.id) {
+      const missionUniversal = await getMissionAll(giver.id, giver.id);
       if (missionUniversal === undefined) {
         await interaction.editReply({ embeds: [errorEmbed] });
         return;
       }
 
       replyEmbed = new EmbedBuilder(viewListEmbedPrototype.toJSON())
-        .setTitle(`공통 승격 조건: ${interaction.user.displayName}`)
+        .setTitle(`공통 승격 조건: ${giver.displayName}`)
         .addFields({
           name: "공통 조건",
-          value: createMissionMapString(missionUniversal, interaction.user.id),
+          value: createMissionMapString(missionUniversal, giver.id),
           inline: false,
         });
     } else {
@@ -255,13 +252,13 @@ export const doReply = async (
         return;
       }
 
-      const progress = await getMissionProgress(interaction.user.id, target.id);
+      const progress = await getMissionProgress(giver.id, target.id);
       const missionUniversal = await getMissionAll(
-        interaction.user.id,
-        interaction.user.id
+        giver.id,
+        giver.id
       );
       const missionSpecific = await getMissionAll(
-        interaction.user.id,
+        giver.id,
         target.id
       );
       if (
@@ -275,7 +272,7 @@ export const doReply = async (
 
       replyEmbed = new EmbedBuilder(viewListEmbedPrototype.toJSON())
         .setTitle(
-          `${target.displayName}의 승격 조건 : ${interaction.user.displayName}`
+          `${target.displayName}의 승격 조건 : ${giver.displayName}`
         )
         .addFields({
           name: "달성 현황",
