@@ -11,7 +11,7 @@ export const createMissionMapPrintString = (missionMap: Map<string, Mission[]>, 
         .filter(([_, missions]) => missions.length !== 0)
         .sort(([category1, _], [__, ___]) => isDefaultCategory(category1) ? -1 : 0)
         .map(([category, missions]) => (!isDefaultCategory(category) ? `### ${category}\n` : "") +
-            missions.map(mission => createMissionPrintString(mission, targetId)).join(""))
+            missions.map(mission => createMissionPrintString(mission, targetId)).join("\n"))
         .join("\n") :
     "제시된 조건이 없습니다"
 
